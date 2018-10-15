@@ -11,4 +11,5 @@ object HOF {
       (0 until as.length - 1).zip(1 until as.length)
         .forall(pair => ordered(as(pair._1), as(pair._2)))
 
+  def compose[A,B,C](f: B => C, g: A => B): A => C = g andThen f
 }

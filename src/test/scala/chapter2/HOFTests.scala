@@ -22,4 +22,11 @@ class HOFTests extends FunSuite {
   test("Single element Array is ordered") {
     assert(isSorted(Array(1), naturalOrder))
   }
+
+  test("function composition") {
+    def f: Int => String = x => x.toString
+    def g: Int => Int = x => x * x
+
+    assert(compose(f, g)(3) == "9")
+  }
 }
