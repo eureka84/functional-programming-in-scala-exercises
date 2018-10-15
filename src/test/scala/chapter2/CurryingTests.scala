@@ -6,19 +6,17 @@ import chapter2.Currying._
 class CurryingTests extends FunSuite {
 
   test("curry") {
+    val sum: (Int, Int) => Int = (a: Int, b: Int) => a + b
+    val curriedAddition: Int => Int => Int = curry(sum)
 
-    val curriedAddition: Int => Int => Int = curry((a: Int, b: Int) => a + b)
 
-    val plusThree: Int => Int = curriedAddition(3)
-
-    assert(plusThree(4) == 7)
+    assert(curriedAddition(4)(3) == sum(4,3))
   }
 
   test("uncurry") {
-    def curriedAddition: Int => Int => Int = (x: Int) => (y: Int) => x + y
+    val curriedAddition: Int => Int => Int = (x: Int) => (y: Int) => x + y
+    val sum: (Int, Int) => Int = uncurry(curriedAddition)
 
-    def sum: (Int, Int) => Int = uncurry(curriedAddition)
-
-    assert(sum(3,4) == 7)
+    assert(sum(3,4) == curriedAddition(3)(4))
   }
 }
