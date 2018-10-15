@@ -2,9 +2,7 @@ package chapter2
 
 import org.scalatest.FunSuite
 import chapter2.Currying._
-/**
-  * @author asciarra 
-  */
+
 class CurryingTests extends FunSuite {
 
   test("curry") {
@@ -16,4 +14,11 @@ class CurryingTests extends FunSuite {
     assert(plusThree(4) == 7)
   }
 
+  test("uncurry") {
+    def curriedAddition: Int => Int => Int = (x: Int) => (y: Int) => x + y
+
+    def sum: (Int, Int) => Int = uncurry(curriedAddition)
+
+    assert(sum(3,4) == 7)
+  }
 }
