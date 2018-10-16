@@ -6,14 +6,14 @@ import org.scalatest.FunSuite
 class ListTests extends FunSuite {
 
   test("List pattern matching") {
-    val x = List(1, 2, 3, 4, 5) match {
+    val res = List(1, 2, 3, 4, 5) match {
       case Cons(x, Cons(2, Cons(4, _))) => x
       case Nil => 42
       case Cons(x, Cons(y, Cons(3, Cons(4, _)))) => x + y
       case Cons(h, t) => h + sum(t)
       case _ => 101
     }
-    assert(x == 3)
+    assert(res == 3)
   }
 
   test("tail of non empty list") {
