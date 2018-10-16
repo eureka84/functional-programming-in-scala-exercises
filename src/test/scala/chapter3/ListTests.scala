@@ -55,7 +55,7 @@ class ListTests extends FunSuite {
   test("drop all elements from xs because p holds for all of them") {
     val xs: List[Int] = List(2, 4, 6)
 
-    assert(dropWhile(xs)(x=> (x % 2) == 0) == Nil)
+    assert(dropWhile(xs)(x => (x % 2) == 0) == Nil)
   }
 
   test("init of non empty list") {
@@ -74,5 +74,13 @@ class ListTests extends FunSuite {
     val xs: List[Int] = List(1)
 
     assert(init(xs) == Nil)
+  }
+
+  test("foldRight") {
+    assert(foldRight(List(1, 2, 3), Nil: List[Int])(Cons(_, _)) == List(1, 2, 3))
+  }
+
+  test("length") {
+    assert(length(List(1, 2, 3)) == 3)
   }
 }
