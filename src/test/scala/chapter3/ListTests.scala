@@ -57,4 +57,22 @@ class ListTests extends FunSuite {
 
     assert(dropWhile(xs, (x: Int) => (x % 2) == 0) == Nil)
   }
+
+  test("init of non empty list") {
+    val xs: List[Int] = List(1, 2, 3, 4)
+
+    assert(init(xs) == List(1, 2, 3))
+  }
+
+  test("init of empty list") {
+    val xs: List[Int] = Nil
+
+    assert(init(xs) == Nil)
+  }
+
+  test("init of singleton list") {
+    val xs: List[Int] = List(1)
+
+    assert(init(xs) == Nil)
+  }
 }
