@@ -1,14 +1,12 @@
 package chapter3
 
-import java.util.NoSuchElementException
-
-import org.scalatest.FunSuite
 import chapter3.List._
+import org.scalatest.FunSuite
 
 class ListTests extends FunSuite {
 
-  test("List pattern matching"){
-    val x = List(1,2,3,4,5) match {
+  test("List pattern matching") {
+    val x = List(1, 2, 3, 4, 5) match {
       case Cons(x, Cons(2, Cons(4, _))) => x
       case Nil => 42
       case Cons(x, Cons(y, Cons(3, Cons(4, _)))) => x + y
@@ -29,7 +27,7 @@ class ListTests extends FunSuite {
     assert(tail(xs) == Nil)
   }
 
-  test("set head"){
+  test("set head") {
     val xs = List(1, 2, 3)
 
     assert(setHead(xs, 4) == List(4, 2, 3))
@@ -46,5 +44,17 @@ class ListTests extends FunSuite {
     val xs = List(1, 2)
 
     assert(drop(xs, 4) == Nil)
+  }
+
+  test("drop n elements from m where m > n for which p holds") {
+    val xs: List[Int] = List(2, 4, 6, 1, 2, 3)
+
+    assert(dropWhile(xs, (x: Int) => (x % 2) == 0) == List(1, 2, 3))
+  }
+
+  test("drop all elements from xs because p holds for all of them") {
+    val xs: List[Int] = List(2, 4, 6)
+
+    assert(dropWhile(xs, (x: Int) => (x % 2) == 0) == Nil)
   }
 }
