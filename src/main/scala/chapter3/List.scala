@@ -8,8 +8,12 @@ case class Cons[A](head: A, tail: List[A]) extends List[A]
 
 object List {
 
+  def apply[A](as: A*): List[A] =
+    if (as.isEmpty) Nil
+    else Cons(as.head, apply(as.tail: _*))
+
   def tail[A](xs: List[A]): List[A] = xs match {
-    case Nil => throw new NoSuchElementException
+    case Nil => Nil
     case Cons(_, t) => t
   }
 
@@ -23,8 +27,7 @@ object List {
     case Cons(h, t) => h + sum(t)
   }
 
-  def apply[A](as: A*): List[A] =
-    if (as.isEmpty) Nil
-    else Cons(as.head, apply(as.tail: _*))
-
+  def drop[A](l: List[A], n: Int): List[A] =
+    if (n == 0) l
+    else drop(tail(l), n-1)
 }

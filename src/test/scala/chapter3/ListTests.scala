@@ -26,9 +26,7 @@ class ListTests extends FunSuite {
 
   test("tail of an empty list") {
     val xs = Nil
-    intercept[NoSuchElementException] {
-      tail(xs)
-    }
+    assert(tail(xs) == Nil)
   }
 
   test("set head"){
@@ -37,4 +35,16 @@ class ListTests extends FunSuite {
     assert(setHead(xs, 4) == List(4, 2, 3))
   }
 
+
+  test("drop n elem from xs of m length where m > n") {
+    val xs = List(1, 2, 3, 4, 5, 6, 7, 8, 9)
+
+    assert(drop(xs, 4) == List(5, 6, 7, 8, 9))
+  }
+
+  test("drop n elem from xs of m length where n > m") {
+    val xs = List(1, 2)
+
+    assert(drop(xs, 4) == Nil)
+  }
 }
