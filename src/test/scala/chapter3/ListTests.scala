@@ -49,13 +49,13 @@ class ListTests extends FunSuite {
   test("drop n elements from m where m > n for which p holds") {
     val xs: List[Int] = List(2, 4, 6, 1, 2, 3)
 
-    assert(dropWhile(xs, (x: Int) => (x % 2) == 0) == List(1, 2, 3))
+    assert(dropWhile(xs)(x => (x % 2) == 0) == List(1, 2, 3))
   }
 
   test("drop all elements from xs because p holds for all of them") {
     val xs: List[Int] = List(2, 4, 6)
 
-    assert(dropWhile(xs, (x: Int) => (x % 2) == 0) == Nil)
+    assert(dropWhile(xs)(x=> (x % 2) == 0) == Nil)
   }
 
   test("init of non empty list") {
