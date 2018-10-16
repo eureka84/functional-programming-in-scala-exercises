@@ -36,8 +36,8 @@ object List {
 
   def init[A](l: List[A]): List[A] = l match {
     case Nil => Nil
-    case Cons(h, Nil) => Nil
-    case Cons(h, Cons(h2, Nil)) => Cons(h, Nil)
+    case Cons(_, Nil) => Nil
+    case Cons(h, Cons(_, Nil)) => Cons(h, Nil)
     case Cons(h, t) => Cons(h, init(t))
   }
 }
