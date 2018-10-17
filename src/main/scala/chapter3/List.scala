@@ -1,10 +1,18 @@
 package chapter3
 
-sealed trait List[+A]
+sealed trait List[+A] {
+  import List._
+  override def toString: String = this match {
+    case Nil => "()"
+    case Cons(_, _) => s"(${foldLeft(this, "")((acc, elem) =>
+      if (acc.isEmpty) elem.toString
+      else s"$acc, $elem"
+    )})"
+  }
+}
 
 case object Nil extends List[Nothing]
-
-case class Cons[A](head: A, tail: List[A]) extends List[A]
+case class Cons[+A](head: A, tail: List[A]) extends List[A]
 
 object List {
 
@@ -38,23 +46,29 @@ object List {
     case Cons(h, t) => Cons(h, init(t))
   }
 
-  def foldRight[A, B](as: List[A], z: B)(f: (A, B) => B): B =
-    as match {
-      case Nil => z
-      case Cons(x, xs) => f(x, foldRight(xs, z)(f))
-    }
 
   //  def length[A](as: List[A]): Int = foldRight(as, 0)((_, acc) => acc + 1)
   def length[A](as: List[A]): Int = foldLeft(as, 0)((acc, _) => acc + 1)
 
   def foldLeft[A, B](as: List[A], z: B)(f: (B, A) => B): B =
-    as match {
-      case Nil => z
-      case Cons(h, t) => foldLeft(t, f(z, h))(f)
-    }
+  as match {
+    case Nil => z
+    case Cons(h, t) => foldLeft(t, f(z, h))(f)
+  }
+  // Theoretically we could rewrite foldLeft in terms of foldRight like this
+  // foldRight(reverse(as), z)((x, y) => f(y, x))
 
-  def reverse[A](xs: List[A]): List[A] = foldLeft(xs, Nil: List[A])((tail, head) => Cons(head, tail))
 
+  def foldRight[A, B](as: List[A], z: B)(f: (A, B) => B): B =
+    foldLeft(reverse(as), z)((b, a) => f(a, b))
+  //    as match {
+  //      case Nil => z
+  //      case Cons(x, xs) => f(x, foldRight(xs, z)(f))
+  //    }
+
+
+  def reverse[A](xs: List[A]): List[A] =
+    foldLeft(xs, Nil: List[A])((tail, head) => Cons(head, tail))
 }
 
 object IntList {
