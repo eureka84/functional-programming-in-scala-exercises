@@ -109,6 +109,10 @@ class ListTests extends FunSuite with Matchers {
   }
 
   test("list to string") {
-    assert(listToString(List(1.0, 2.0, 3.0))==List("1.0", "2.0", "3.0"))
+    assert(listToString(List(1.0, 2.0, 3.0)) == List("1.0", "2.0", "3.0"))
+  }
+
+  test("filtering a list") {
+    assert(filter(List(1, 2, 3, 4, 5, 6))(_ % 2 == 0) == List(2, 4, 6))
   }
 }

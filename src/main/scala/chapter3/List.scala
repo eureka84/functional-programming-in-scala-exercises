@@ -83,6 +83,10 @@ object List {
   def flatten[A](l: List[List[A]]): List[A] =
     foldLeft(l, Nil: List[A])(append)
 
+
+  def filter[A](as: List[A])(p: A => Boolean): List[A] =
+    foldRight(as, Nil: List[A])((elem, acc) => if (p(elem)) Cons(elem, acc) else acc)
+
 }
 
 object IntList {
