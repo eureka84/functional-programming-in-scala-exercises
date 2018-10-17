@@ -51,6 +51,8 @@ object List {
       case Cons(h, t) => foldLeft(t, f(z, h))(f)
     }
 
+    def reverse[A](xs: List[A]): List[A] = foldLeft(xs, Nil:List[A])((tail, head) =>  Cons(head, tail))
+
 }
 
 object IntList {

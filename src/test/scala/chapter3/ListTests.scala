@@ -1,7 +1,7 @@
 package chapter3
 
-import chapter3.List._
 import chapter3.IntList._
+import chapter3.List._
 import org.scalatest.FunSuite
 
 class ListTests extends FunSuite {
@@ -83,5 +83,9 @@ class ListTests extends FunSuite {
 
   test("length") {
     assert(length(List(1, 2, 3)) == 3)
+  }
+
+  test("reverse") {
+    assert(reverse(List(1, 2, 3)) == List(3, 2, 1))
   }
 }
