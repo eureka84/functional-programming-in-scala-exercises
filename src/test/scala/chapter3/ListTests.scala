@@ -2,9 +2,9 @@ package chapter3
 
 import chapter3.IntList._
 import chapter3.List._
-import org.scalatest.FunSuite
+import org.scalatest.{FunSuite, Matchers}
 
-class ListTests extends FunSuite {
+class ListTests extends FunSuite with Matchers {
 
   test("List pattern matching") {
     val res = List(1, 2, 3, 4, 5) match {
@@ -78,11 +78,12 @@ class ListTests extends FunSuite {
   }
 
   test("foldRight") {
-    assert(foldRight(List(1, 2, 3), Nil: List[Int])(Cons(_, _)) == List(1, 2, 3))
+//    assert(foldRight(List(1, 2, 3), Nil: List[Int])(Cons(_, _)) == List(1, 2, 3))
+    foldRight(List(1, 2, 3), Nil: List[Int])(Cons(_, _)) shouldEqual  List(1, 2, 3)
   }
 
   test("length") {
-    assert(length(List(1, 2, 3)) == 3)
+    assert(List.length(List(1, 2, 3)) == 3)
   }
 
   test("reverse") {
