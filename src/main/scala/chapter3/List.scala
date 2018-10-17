@@ -83,14 +83,15 @@ object List {
   def flatten[A](l: List[List[A]]): List[A] =
     foldLeft(l, Nil: List[A])(append)
 
-
   def filter[A](as: List[A])(p: A => Boolean): List[A] =
-    foldRight(as, Nil: List[A])((elem, acc) => if (p(elem)) Cons(elem, acc) else acc)
+    flatMap(as)(x => if (p(x)) List(x) else Nil)
+
+  //    foldRight(as, Nil: List[A])((elem, acc) => if (p(elem)) Cons(elem, acc) else acc)
 
   def map[A, B](xs: List[A])(f: A => B): List[B] =
     foldRight(xs, Nil: List[B])((h: A, t: List[B]) => Cons(f(h), t))
 
-  def flatMap[A,B](as: List[A])(f: A => List[B]): List[B] = flatten(map(as)(f))
+  def flatMap[A, B](as: List[A])(f: A => List[B]): List[B] = flatten(map(as)(f))
 
 }
 
