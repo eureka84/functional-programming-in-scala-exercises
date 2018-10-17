@@ -88,4 +88,8 @@ class ListTests extends FunSuite {
   test("reverse") {
     assert(reverse(List(1, 2, 3)) == List(3, 2, 1))
   }
+
+  test("append a list to another (concatenate)") {
+    assert(append(List(1,2,3), List(4, 5, 6)) == List(1,2,3,4,5,6))
+  }
 }
