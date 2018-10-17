@@ -78,8 +78,8 @@ class ListTests extends FunSuite with Matchers {
   }
 
   test("foldRight") {
-//    assert(foldRight(List(1, 2, 3), Nil: List[Int])(Cons(_, _)) == List(1, 2, 3))
-    foldRight(List(1, 2, 3), Nil: List[Int])(Cons(_, _)) shouldEqual  List(1, 2, 3)
+    //    assert(foldRight(List(1, 2, 3), Nil: List[Int])(Cons(_, _)) == List(1, 2, 3))
+    foldRight(List(1, 2, 3), Nil: List[Int])(Cons(_, _)) shouldEqual List(1, 2, 3)
   }
 
   test("length") {
@@ -102,5 +102,13 @@ class ListTests extends FunSuite with Matchers {
           List(4, 5, 6)
         )
       ) == List(1, 2, 3, 4, 5, 6))
+  }
+
+  test("add one to each element in the List") {
+    assert(addOne(List(1, 2, 3)) == List(2, 3, 4))
+  }
+
+  test("list to string"){
+
   }
 }

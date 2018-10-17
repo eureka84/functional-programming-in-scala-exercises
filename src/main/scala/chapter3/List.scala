@@ -1,17 +1,22 @@
 package chapter3
 
 sealed trait List[+A] {
+
   import List._
+
   override def toString: String = this match {
     case Nil => "()"
-    case Cons(_, _) => s"(${foldLeft(this, "")((acc, elem) =>
-      if (acc.isEmpty) elem.toString
-      else s"$acc, $elem"
-    )})"
+    case Cons(_, _) => s"(${
+      foldLeft(this, "")((acc, elem) =>
+        if (acc.isEmpty) elem.toString
+        else s"$acc, $elem"
+      )
+    })"
   }
 }
 
 case object Nil extends List[Nothing]
+
 case class Cons[+A](head: A, tail: List[A]) extends List[A]
 
 object List {
@@ -51,16 +56,18 @@ object List {
   def length[A](as: List[A]): Int = foldLeft(as, 0)((acc, _) => acc + 1)
 
   def foldLeft[A, B](as: List[A], z: B)(f: (B, A) => B): B =
-  as match {
-    case Nil => z
-    case Cons(h, t) => foldLeft(t, f(z, h))(f)
-  }
+    as match {
+      case Nil => z
+      case Cons(h, t) => foldLeft(t, f(z, h))(f)
+    }
+
   // Theoretically we could rewrite foldLeft in terms of foldRight like this
   // foldRight(reverse(as), z)((x, y) => f(y, x))
 
 
   def foldRight[A, B](as: List[A], z: B)(f: (A, B) => B): B =
     foldLeft(reverse(as), z)((b, a) => f(a, b))
+
   //    as match {
   //      case Nil => z
   //      case Cons(x, xs) => f(x, foldRight(xs, z)(f))
@@ -74,7 +81,7 @@ object List {
     foldRight(l, r)(Cons(_, _))
 
   def flatten[A](l: List[List[A]]): List[A] =
-    foldLeft(l, Nil:List[A])(append)
+    foldLeft(l, Nil: List[A])(append)
 
 }
 
@@ -85,4 +92,13 @@ object IntList {
   def sum(xs: List[Int]): Int = foldLeft(xs, 0)(_ + _)
 
   def product(xs: List[Int]): Int = foldLeft(xs, 1)(_ * _)
+
+  def addOne(xs: List[Int]): List[Int] =
+    map(xs)(_ + 1)
+
+  def listToString(xs: List[Double]): List[String] =
+    map(xs)(_.toString)
+
+  def map[A, B](xs: List[A])(f: A => B): List[B] =
+    foldRight(xs, Nil: List[B])((h: A, t: List[B]) => Cons(f(h), t))
 }
