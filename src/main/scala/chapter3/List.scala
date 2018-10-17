@@ -72,6 +72,10 @@ object List {
 
   def append[A](l: List[A], r: List[A]): List[A] =
     foldRight(l, r)(Cons(_, _))
+
+  def flatten[A](l: List[List[A]]): List[A] =
+    foldLeft(l, Nil:List[A])(append)
+
 }
 
 object IntList {

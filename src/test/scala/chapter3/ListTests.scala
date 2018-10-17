@@ -90,6 +90,16 @@ class ListTests extends FunSuite {
   }
 
   test("append a list to another (concatenate)") {
-    assert(append(List(1,2,3), List(4, 5, 6)) == List(1,2,3,4,5,6))
+    assert(append(List(1, 2, 3), List(4, 5, 6)) == List(1, 2, 3, 4, 5, 6))
+  }
+
+  test("flatten lists") {
+    assert(
+      flatten(
+        List(
+          List(1, 2, 3),
+          List(4, 5, 6)
+        )
+      ) == List(1, 2, 3, 4, 5, 6))
   }
 }
