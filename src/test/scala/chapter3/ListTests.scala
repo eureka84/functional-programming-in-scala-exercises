@@ -1,6 +1,7 @@
 package chapter3
 
 import chapter3.List._
+import chapter3.IntList._
 import org.scalatest.FunSuite
 
 class ListTests extends FunSuite {

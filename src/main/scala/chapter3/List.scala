@@ -20,11 +20,6 @@ object List {
     case Cons(_, t) => Cons(newHead, t)
   }
 
-  def sum(xs: List[Int]): Int = xs match {
-    case Nil => 0
-    case Cons(h, t) => h + sum(t)
-  }
-
   def drop[A](l: List[A], n: Int): List[A] =
     if (n == 0) l
     else drop(tail(l), n-1)
@@ -56,4 +51,11 @@ object List {
       case Cons(h, t) => foldLeft(t, f(z, h))(f)
     }
 
+}
+
+object IntList {
+  import List._
+
+  def sum(xs: List[Int]): Int = foldLeft(xs, 0)(_+_)
+  def product(xs: List[Int]): Int = foldLeft(xs, 1)(_*_)
 }
