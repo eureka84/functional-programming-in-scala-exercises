@@ -108,7 +108,7 @@ class ListTests extends FunSuite with Matchers {
     assert(addOne(List(1, 2, 3)) == List(2, 3, 4))
   }
 
-  test("list to string"){
-
+  test("list to string") {
+    assert(listToString(List(1.0, 2.0, 3.0))==List("1.0", "2.0", "3.0"))
   }
 }
