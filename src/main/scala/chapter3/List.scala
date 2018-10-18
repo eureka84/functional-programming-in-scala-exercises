@@ -95,12 +95,10 @@ object List {
 
   def flatMap[A, B](as: List[A])(f: A => List[B]): List[B] = flatten(map(as)(f))
 
-  def zipWith[A, B, C](xs: List[A], ys: List[B])(f: (A, B) => C): List[C] = xs match {
-    case Nil => Nil
-    case Cons(hx, tx) => ys match {
-      case Nil => Nil
-      case Cons(hy, ty) => Cons(f(hx, hy), zipWith(tx, ty)(f))
-    }
+  def zipWith[A, B, C](xs: List[A], ys: List[B])(f: (A, B) => C): List[C] = (xs, ys) match {
+    case (_, Nil) => Nil
+    case (Nil, _) => Nil
+    case (Cons(hx, tx), Cons(hy, ty)) =>Cons(f(hx, hy), zipWith(tx, ty)(f))
   }
 
 }
