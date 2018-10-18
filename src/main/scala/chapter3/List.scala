@@ -104,6 +104,19 @@ object List {
       case Nil => Nil
       case Cons(h, t) => Cons(h, take(n -1, t))
     }
+
+  def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean = {
+    val subLength = length(sub)
+    val supLength = length(sup)
+
+    def subLists(value: List[A], i: Int)=
+      (0 to supLength - subLength).map(index => take(subLength, drop(sup, index)))
+
+    if (subLength > supLength) false
+    else if (subLength == supLength) sup ==sub
+    else subLists(sup, subLength).contains(sub)
+  }
+
 }
 
 object IntList {

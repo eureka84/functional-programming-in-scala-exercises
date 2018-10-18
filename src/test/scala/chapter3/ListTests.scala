@@ -130,4 +130,11 @@ class ListTests extends FunSuite with Matchers {
     assert(take(0, List(1, 2, 3, 4, 5)) == Nil)
     assert(take(4, Nil) == Nil)
   }
+
+  test("has sub sequence"){
+    assert(!hasSubsequence(List(2, 3), List(1, 2, 3, 4, 5, 6)))
+    assert(hasSubsequence(List(1, 2, 3), List(1, 2, 3)))
+    assert(hasSubsequence(List(1, 2, 3, 4, 5, 6), List(2, 3, 4)))
+    assert(!hasSubsequence(List(1, 2, 3, 4, 5, 6), List(2, 3, 5)))
+  }
 }
