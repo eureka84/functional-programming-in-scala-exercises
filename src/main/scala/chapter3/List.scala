@@ -62,14 +62,12 @@ object List {
       case Nil => z
       case Cons(h, t) => foldLeft(t, f(z, h))(f)
     }
-
   // Theoretically we could rewrite foldLeft in terms of foldRight like this
   // foldRight(reverse(as), z)((x, y) => f(y, x))
 
 
   def foldRight[A, B](as: List[A], z: B)(f: (A, B) => B): B =
     foldLeft(reverse(as), z)((b, a) => f(a, b))
-
   //    as match {
   //      case Nil => z
   //      case Cons(x, xs) => f(x, foldRight(xs, z)(f))
@@ -87,8 +85,7 @@ object List {
 
   def filter[A](as: List[A])(p: A => Boolean): List[A] =
     flatMap(as)(x => if (p(x)) List(x) else Nil)
-
-  //    foldRight(as, Nil: List[A])((elem, acc) => if (p(elem)) Cons(elem, acc) else acc)
+  //  foldRight(as, Nil: List[A])((elem, acc) => if (p(elem)) Cons(elem, acc) else acc)
 
   def map[A, B](xs: List[A])(f: A => B): List[B] =
     foldRight(xs, Nil: List[B])((h: A, t: List[B]) => Cons(f(h), t))
