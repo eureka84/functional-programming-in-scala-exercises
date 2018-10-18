@@ -101,6 +101,12 @@ object List {
     case (Cons(hx, tx), Cons(hy, ty)) =>Cons(f(hx, hy), zipWith(tx, ty)(f))
   }
 
+  def take[A](n: Int, xs: List[A]): List[A] =
+    if (n == 0) Nil
+    else xs  match {
+      case Nil => Nil
+      case Cons(h, t) => Cons(h, take(n -1, t))
+    }
 }
 
 object IntList {
@@ -119,4 +125,5 @@ object IntList {
 
   def zipSum(xs: List[Int], ys: List[Int]): List[Int] =
     zipWith(xs, ys)(_ + _)
+
 }
