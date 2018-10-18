@@ -119,4 +119,9 @@ class ListTests extends FunSuite with Matchers {
   test("flatMap") {
     assert(flatMap(List(1, 2, 3))(i => List(i, i)) == List(1, 1, 2, 2, 3, 3))
   }
+
+
+  test("zip sum") {
+    assert(zipSum(List(1, 2, 3), List(4, 5, 6)) == List(5, 7, 9))
+  }
 }
