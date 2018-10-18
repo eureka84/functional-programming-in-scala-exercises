@@ -1,7 +1,5 @@
 package chapter3
 
-import chapter3.IntList.zipSum
-
 sealed trait List[+A] {
 
   import List._
@@ -62,12 +60,14 @@ object List {
       case Nil => z
       case Cons(h, t) => foldLeft(t, f(z, h))(f)
     }
+
   // Theoretically we could rewrite foldLeft in terms of foldRight like this
   // foldRight(reverse(as), z)((x, y) => f(y, x))
 
 
   def foldRight[A, B](as: List[A], z: B)(f: (A, B) => B): B =
     foldLeft(reverse(as), z)((b, a) => f(a, b))
+
   //    as match {
   //      case Nil => z
   //      case Cons(x, xs) => f(x, foldRight(xs, z)(f))
@@ -85,6 +85,7 @@ object List {
 
   def filter[A](as: List[A])(p: A => Boolean): List[A] =
     flatMap(as)(x => if (p(x)) List(x) else Nil)
+
   //  foldRight(as, Nil: List[A])((elem, acc) => if (p(elem)) Cons(elem, acc) else acc)
 
   def map[A, B](xs: List[A])(f: A => B): List[B] =
@@ -95,25 +96,25 @@ object List {
   def zipWith[A, B, C](xs: List[A], ys: List[B])(f: (A, B) => C): List[C] = (xs, ys) match {
     case (_, Nil) => Nil
     case (Nil, _) => Nil
-    case (Cons(hx, tx), Cons(hy, ty)) =>Cons(f(hx, hy), zipWith(tx, ty)(f))
+    case (Cons(hx, tx), Cons(hy, ty)) => Cons(f(hx, hy), zipWith(tx, ty)(f))
   }
 
   def take[A](n: Int, xs: List[A]): List[A] =
     if (n == 0) Nil
-    else xs  match {
+    else xs match {
       case Nil => Nil
-      case Cons(h, t) => Cons(h, take(n -1, t))
+      case Cons(h, t) => Cons(h, take(n - 1, t))
     }
 
   def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean = {
     val subLength = length(sub)
     val supLength = length(sup)
 
-    def subLists(value: List[A], i: Int)=
+    def subLists(value: List[A], i: Int) =
       (0 to supLength - subLength).map(index => take(subLength, drop(sup, index)))
 
     if (subLength > supLength) false
-    else if (subLength == supLength) sup ==sub
+    else if (subLength == supLength) sup == sub
     else subLists(sup, subLength).contains(sub)
   }
 
