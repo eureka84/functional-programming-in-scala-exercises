@@ -28,7 +28,7 @@ object Tree {
   //  }
 
   def map[A, B](t: Tree[A])(f: A => B): Tree[B] =
-    fold(t)((x: A) => Leaf(f(x)): Tree[B])((l: Tree[B], r: Tree[B]) => Branch(l, r))
+    fold(t)((x: A) => Leaf(f(x)): Tree[B])((leftTree, rightTree) => Branch(leftTree, rightTree))
   //  t match {
   //    case Leaf(value) => Leaf(f(value))
   //    case Branch(left, right) => Branch(map(left)(f), map(right)(f))
