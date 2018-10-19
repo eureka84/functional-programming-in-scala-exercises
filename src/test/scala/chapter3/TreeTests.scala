@@ -42,7 +42,7 @@ class TreeTests extends FunSuite {
 
     println(tree)
 
-    assert(depth(tree) == 4)
+    assert(depth(tree) == 3)
   }
 
   test("map") {
