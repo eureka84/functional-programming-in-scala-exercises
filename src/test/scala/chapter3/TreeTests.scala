@@ -45,4 +45,33 @@ class TreeTests extends FunSuite {
     assert(depth(tree) == 4)
   }
 
+  test("map") {
+    val tree =
+      Branch(
+        Leaf(5),
+        Branch(
+          Leaf(2),
+          Branch(
+            Leaf(3),
+            Leaf(4)
+          )
+        )
+      )
+
+    val expected =
+      Branch(
+        Leaf("5"),
+        Branch(
+          Leaf("2"),
+          Branch(
+            Leaf("3"),
+            Leaf("4")
+          )
+        )
+      )
+
+
+    assert(map(tree)(_.toString) == expected)
+  }
+
 }
