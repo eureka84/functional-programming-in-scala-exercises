@@ -21,7 +21,7 @@ object Tree {
 //  }
 
   def depth[A](t: Tree[A]): Int =
-    fold(t)(_ => 0)((l, r) => 1 + l + r)
+    fold(t)(_ => 0)((l, r) => 1 + (l max r))
   //  t match {
   //    case Leaf(_) => 0
   //    case Branch(left, right) => 1 + (depth(left) max depth(right))
