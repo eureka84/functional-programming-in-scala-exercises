@@ -106,16 +106,18 @@ object List {
       case Cons(h, t) => Cons(h, take(n - 1, t))
     }
 
-  def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean = {
-    val subLength = length(sub)
-    val supLength = length(sup)
+  @annotation.tailrec
+  def startsWith[A](l: List[A], prefix: List[A]): Boolean = (l, prefix) match {
+    case (_, Nil) => true
+    case (Cons(h, t), Cons(h2, t2)) if h == h2 => startsWith(t, t2)
+    case _ => false
+  }
 
-    def subLists(value: List[A], i: Int) =
-      (0 to supLength - subLength).map(index => take(subLength, drop(sup, index)))
-
-    if (subLength > supLength) false
-    else if (subLength == supLength) sup == sub
-    else subLists(sup, subLength).contains(sub)
+  @annotation.tailrec
+  def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean = sup match {
+    case Nil => sub == Nil
+    case _ if startsWith(sup, sub) => true
+    case Cons(h, t) => hasSubsequence(t, sub)
   }
 
 }
