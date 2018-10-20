@@ -35,6 +35,16 @@ sealed trait Option[+A] {
 case class Some[+A](v: A) extends Option[A]
 case object None extends Option[Nothing]
 
+object Option {
+
+  def Try[A](a: => A): Option[A] =
+    try Some(a)
+    catch { case e: Exception => None}
+
+  def map2[A,B,C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] =
+    a.flatMap(valueA => b.map(valueB => f(valueA, valueB)))
+}
+
 object Math {
 
   def mean(xs:Seq[Double]): Option[Double] = xs match {

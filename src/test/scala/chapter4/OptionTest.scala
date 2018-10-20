@@ -58,4 +58,17 @@ class OptionTest extends FunSuite with Matchers {
     variance(Nil) shouldEqual None
   }
 
+  test("map2"){
+    import Option._
+
+    def parseInt(s: String) = Try(s.toInt)
+
+    def parseAndSum(a: String, b: String): Option[Int] =
+      map2(parseInt(a), parseInt(b))(_ + _)
+
+    parseAndSum("1", "2") shouldEqual Some(3)
+    parseAndSum("a", "2") shouldEqual None
+    parseAndSum("1", "b") shouldEqual None
+  }
+
 }
