@@ -58,7 +58,7 @@ object Option {
 
   def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] = a match {
     case Nil => Some(Nil)
-    case h :: t => f(h).flatMap(h1 => traverse(t)(f).map(t1 => h1::t1))
+    case h :: t => f(h) flatMap (h1 => traverse(t)(f) map (t1 => h1::t1))
   }
 }
 
