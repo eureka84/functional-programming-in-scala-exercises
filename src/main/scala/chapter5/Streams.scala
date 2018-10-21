@@ -1,5 +1,7 @@
 package chapter5
 
+import chapter5.Stream._
+
 sealed trait Stream[+A] {
   def headOption: Option[A] = this match {
     case Empty => None
@@ -19,6 +21,17 @@ sealed trait Stream[+A] {
     }
 
     go(this, List()).reverse
+  }
+
+  def take(n: Int): Stream[A] = this match {
+    case Cons(h, t) if n > 0 => cons(h(), t().take(n - 1))
+    case _ => empty
+  }
+
+  @annotation.tailrec
+  final def drop(n: Int): Stream[A] = this match {
+    case Cons(_, t) if n > 0 => t().drop(n-1)
+    case _ => this
   }
 }
 
