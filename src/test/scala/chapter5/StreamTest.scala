@@ -24,7 +24,7 @@ class StreamTest extends FunSuite {
   }
 
 
-  val isEven: Int => Boolean = (x:Int) => x % 2 == 0
+  val isEven: Int => Boolean = (x: Int) => x % 2 == 0
 
   test("forAll") {
     val empty: Stream[Int] = Stream()
@@ -35,10 +35,15 @@ class StreamTest extends FunSuite {
   }
 
 
-  test("take while"){
+  test("take while") {
     assert(Stream(2, 4, 5).takeWhile(isEven).toList == List(2, 4))
     assert(Stream().takeWhile(isEven).toList == Nil)
     assert(Stream(2, 4, 6).takeWhile(isEven).toList == List(2, 4, 6))
     assert(Stream(1, 2, 3).takeWhile(isEven).toList == Nil)
+  }
+
+  test("headOption") {
+    assert(Stream().headOption == None)
+    assert(Stream(1, 2, 3).headOption == Some(1))
   }
 }

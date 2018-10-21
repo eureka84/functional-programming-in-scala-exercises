@@ -3,10 +3,6 @@ package chapter5
 import chapter5.Stream._
 
 sealed trait Stream[+A] {
-  def headOption: Option[A] = this match {
-    case Empty => None
-    case Cons(h, _) => Some(h())
-  }
 
   def toListRecursive: List[A] = this match {
     case Empty => Nil
@@ -47,11 +43,18 @@ sealed trait Stream[+A] {
   def takeWhile(p: A => Boolean): Stream[A] =
     foldRight(empty[A])((elem, acc) => if (p(elem)) cons(elem, acc) else empty)
 
-
   //  def takeWhile(f: A => Boolean): Stream[A] = this match {
   //    case Cons(h, t) if f(h()) => cons(h(), t() takeWhile f)
   //    case _ => empty
   //  }
+
+  def headOption: Option[A] = foldRight(None: Option[A])((h, _) => Some(h))
+
+//  def headOption: Option[A] = this match {
+//    case Empty => None
+//    case Cons(h, _) => Some(h())
+//  }
+
 }
 
 case object Empty extends Stream[Nothing]
