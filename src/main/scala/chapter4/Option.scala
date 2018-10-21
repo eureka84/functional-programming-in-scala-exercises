@@ -42,11 +42,11 @@ object Option {
     catch { case e: Exception => None}
 
   def map2[A,B,C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] =
-    a.flatMap(valueA => b.map(valueB => f(valueA, valueB)))
+    a flatMap (valueA => b map (valueB => f(valueA, valueB)))
 
   def sequence[A](a: List[Option[A]]): Option[List[A]] = a match {
     case Nil => Some(Nil)
-    case headOpt :: remainingOpts => headOpt.flatMap(head => sequence(remainingOpts).map(rest => head :: rest))
+    case hOpt :: tOpts => hOpt flatMap (h => sequence(tOpts) map (t => h :: t))
   }
 }
 
