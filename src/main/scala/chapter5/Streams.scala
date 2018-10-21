@@ -30,14 +30,28 @@ sealed trait Stream[+A] {
 
   @annotation.tailrec
   final def drop(n: Int): Stream[A] = this match {
-    case Cons(_, t) if n > 0 => t().drop(n-1)
+    case Cons(_, t) if n > 0 => t().drop(n - 1)
     case _ => this
   }
 
-  def takeWhile(f: A => Boolean): Stream[A] = this match {
-    case Cons(h,t) if f(h()) => cons(h(), t() takeWhile f)
-    case _ => empty
+  def foldRight[B](z: => B)(f: (A, => B) => B): B = this match {
+    case Cons(h, t) => f(h(), t().foldRight(z)(f))
+    case _ => z
   }
+
+  def forAll(p: A => Boolean): Boolean = this match {
+    case Cons(h, t) => p(h()) && t().forAll(p)
+    case _ => true
+  }
+
+  def takeWhile(p: A => Boolean): Stream[A] =
+    foldRight(empty[A])((elem, acc) => if (p(elem)) cons(elem, acc) else empty)
+
+
+  //  def takeWhile(f: A => Boolean): Stream[A] = this match {
+  //    case Cons(h, t) if f(h()) => cons(h(), t() takeWhile f)
+  //    case _ => empty
+  //  }
 }
 
 case object Empty extends Stream[Nothing]
