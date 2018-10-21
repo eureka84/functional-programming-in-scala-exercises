@@ -71,4 +71,11 @@ class OptionTest extends FunSuite with Matchers {
     parseAndSum("1", "b") shouldEqual None
   }
 
+  test("sequence"){
+    import Option._
+
+    sequence(List(Some(1), Some(2), Some(3))) shouldEqual Some(List(1,2,3))
+    sequence(List(Some(1), None, Some(3))) shouldEqual None
+  }
+
 }
