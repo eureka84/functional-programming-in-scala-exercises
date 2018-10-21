@@ -1,6 +1,6 @@
 package chapter5
 
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.FunSuite
 import Stream._
 
 class StreamTest extends FunSuite {
