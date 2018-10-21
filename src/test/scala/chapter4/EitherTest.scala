@@ -33,4 +33,18 @@ class EitherTest extends FunSuite with Matchers {
     sumEither(inverse(0), inverse(2)) shouldEqual Left("Division by zero")
   }
 
+  test("sequence") {
+    import  Either._
+
+    sequence(List(Right(1), Right(2))) shouldEqual Right(List(1, 2))
+    sequence(List(Right(1), Left("Error 1"), Left("Error 2"))) shouldEqual Left("Error 1")
+  }
+
+  test("traverse") {
+    import Either._
+
+    traverse(List(1.0, 2.0, 4.0))(inverse) shouldEqual Right(List(1.0, 0.5, 0.25))
+    traverse(List(1.0, 0.0, 4.0))(inverse) shouldEqual Left("Division by zero")
+  }
+
 }
