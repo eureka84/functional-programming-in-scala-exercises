@@ -4,14 +4,14 @@ import org.scalatest._
 
 class OptionTest extends FunSuite with Matchers {
 
+  def inverse(x: Int): Option[Double] = if (x == 0) None else Some(1.0 / x)
+
   test("map") {
     Some(1).map(_.toString) shouldEqual Some("1")
     None.map(_.toString) shouldEqual None
   }
 
   test("flatMap") {
-    def inverse(x: Int): Option[Double] = if (x == 0) None else Some(1.0 / x)
-
     Some(1).flatMap(inverse) shouldEqual Some(1.0)
     Some(0).flatMap(inverse) shouldEqual None
   }
@@ -58,7 +58,7 @@ class OptionTest extends FunSuite with Matchers {
     variance(Nil) shouldEqual None
   }
 
-  test("map2"){
+  test("map2") {
     import Option._
 
     def parseInt(s: String) = Try(s.toInt)
@@ -71,11 +71,19 @@ class OptionTest extends FunSuite with Matchers {
     parseAndSum("1", "b") shouldEqual None
   }
 
-  test("sequence"){
+  test("sequence") {
     import Option._
 
-    sequence(List(Some(1), Some(2), Some(3))) shouldEqual Some(List(1,2,3))
+    sequence(List(Some(1), Some(2), Some(3))) shouldEqual Some(List(1, 2, 3))
     sequence(List(Some(1), None, Some(3))) shouldEqual None
+  }
+
+  test("traverse") {
+    import Option._
+
+    traverse(List(1, 2, 4))(inverse) shouldEqual Some(List(1, 0.5, 0.25))
+    sequence(Nil) shouldEqual Some(Nil)
+    traverse(List(1, 2, 0))(inverse) shouldEqual None
   }
 
 }
