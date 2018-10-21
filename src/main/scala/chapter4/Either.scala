@@ -37,10 +37,12 @@ object Either {
       case e: Exception => Left(e)
     }
 
-  def sequence[E, A](es: List[Either[E, A]]): Either[E, List[A]] = es match {
-    case Nil => Right(Nil)
-    case hE :: tE => hE.flatMap(h => sequence(tE).map(t => h::t))
-  }
+  def sequence[E, A](es: List[Either[E, A]]): Either[E, List[A]] =
+    traverse(es)(identity)
+//  es match {
+//    case Nil => Right(Nil)
+//    case hE :: tE => hE.flatMap(h => sequence(tE).map(t => h::t))
+//  }
 
   def traverse[E, A, B](es: List[A])(f: A => Either[E, B]): Either[E, List[B]] = es match {
     case Nil => Right(Nil)
