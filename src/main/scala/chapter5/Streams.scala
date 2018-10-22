@@ -19,10 +19,16 @@ sealed trait Stream[+A] {
     go(this, List()).reverse
   }
 
-  def take(n: Int): Stream[A] = this match {
-    case Cons(h, t) if n > 0 => cons(h(), t().take(n - 1))
-    case _ => empty
-  }
+  def take(n: Int): Stream[A] =
+    unfold((this, n)) {
+      case (Cons(h, t), n) if n > 0 => Some((h(), (t(), n - 1)))
+      case _ => None
+    }
+
+  //  def take(n: Int): Stream[A] = this match {
+  //    case Cons(h, t) if n > 0 => cons(h(), t().take(n - 1))
+  //    case _ => empty
+  //  }
 
   @annotation.tailrec
   final def drop(n: Int): Stream[A] = this match {
@@ -41,7 +47,12 @@ sealed trait Stream[+A] {
   }
 
   def takeWhile(p: A => Boolean): Stream[A] =
-    foldRight(empty[A])((elem, acc) => if (p(elem)) cons(elem, acc) else empty)
+    unfold(this) {
+      case Cons(h, t) if p(h()) => Some((h(), t()))
+      case _ => None
+    }
+//  def takeWhile(p: A => Boolean): Stream[A] =
+//    foldRight(empty[A])((elem, acc) => if (p(elem)) cons(elem, acc) else empty)
 
   //  def takeWhile(f: A => Boolean): Stream[A] = this match {
   //    case Cons(h, t) if f(h()) => cons(h(), t() takeWhile f)
@@ -55,7 +66,13 @@ sealed trait Stream[+A] {
   //    case Cons(h, _) => Some(h())
   //  }
 
-  def map[B](f: A => B): Stream[B] = foldRight(empty[B])((h, t) => cons(f(h), t))
+  def map[B](f: A => B): Stream[B] =
+    unfold(this) {
+      case Cons(h, t) => Some((f(h()), t()))
+      case _ => None
+    }
+
+  //  def map[B](f: A => B): Stream[B] = foldRight(empty[B])((h, t) => cons(f(h), t))
 
   def filter(f: A => Boolean): Stream[A] =
     foldRight(empty[A])((h, t) => if (f(h)) cons(h, t) else t)
@@ -66,7 +83,7 @@ sealed trait Stream[+A] {
   def flatMap[B](f: A => Stream[B]): Stream[B] =
     foldRight(empty[B])((h, t) => f(h).append(t))
 
-  def zipAll[B](s2: Stream[B]): Stream[(Option[A],Option[B])] = ???
+  def zipAll[B](s2: Stream[B]): Stream[(Option[A], Option[B])] = ???
 
 }
 
@@ -90,7 +107,7 @@ object Stream {
   def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] =
     f(z) map { case (nextValue, nextState) => cons(nextValue, unfold(nextState)(f)) } getOrElse empty[A]
 
-  def constant[A](a: A): Stream[A] = unfold(a)(x => Some(a, a))
+  def constant[A](a: A): Stream[A] = unfold(a)(_ => Some(a, a))
 
   //  def constant[A](a: A): Stream[A] = cons(a, constant(a))
 
