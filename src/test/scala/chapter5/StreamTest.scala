@@ -63,4 +63,19 @@ class StreamTest extends FunSuite {
     val result: Stream[Int] = Stream(1, 2, 3).flatMap(i => Stream(i, i))
     assert(result.toList == List(1, 1, 2, 2, 3, 3))
   }
+
+  test("constant") {
+    assert(constant(2).take(3).toList == List(2, 2, 2))
+    assert(constant(2).take(5).toList == List(2, 2, 2, 2, 2))
+  }
+
+  test("from") {
+    assert(from(2).take(3).toList == List(2, 3, 4))
+    assert(from(3).take(5).toList == List(3, 4, 5, 6, 7))
+  }
+
+  test("fibs") {
+    assert(fibs().take(7).toList == List(0, 1, 1, 2, 3, 5, 8))
+  }
+
 }
