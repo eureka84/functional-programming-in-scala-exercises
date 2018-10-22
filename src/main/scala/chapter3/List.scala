@@ -89,7 +89,7 @@ object List {
   //  foldRight(as, Nil: List[A])((elem, acc) => if (p(elem)) Cons(elem, acc) else acc)
 
   def map[A, B](xs: List[A])(f: A => B): List[B] =
-    foldRight(xs, Nil: List[B])((h: A, t: List[B]) => Cons(f(h), t))
+    foldRight(xs, Nil: List[B])((h, t) => Cons(f(h), t))
 
   def flatMap[A, B](as: List[A])(f: A => List[B]): List[B] = flatten(map(as)(f))
 

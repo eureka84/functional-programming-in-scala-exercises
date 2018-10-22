@@ -34,7 +34,6 @@ class StreamTest extends FunSuite {
     assert(!Stream(2, 4, 5).forAll(isEven))
   }
 
-
   test("take while") {
     assert(Stream(2, 4, 5).takeWhile(isEven).toList == List(2, 4))
     assert(Stream().takeWhile(isEven).toList == Nil)
@@ -43,7 +42,25 @@ class StreamTest extends FunSuite {
   }
 
   test("headOption") {
-    assert(Stream().headOption == None)
-    assert(Stream(1, 2, 3).headOption == Some(1))
+    assert(Stream().headOption.isEmpty)
+    assert(Stream(1, 2, 3).headOption.contains(1))
+  }
+
+  test("map") {
+    assert(empty[Int].map(_ * 2).toList == Nil)
+    assert(Stream(1, 2, 3).map(_ * 2).toList == List(2, 4, 6))
+  }
+
+  test("filter") {
+    assert(Stream(1, 2, 3).filter(_ % 2 == 1).toList == List(1, 3))
+  }
+
+  test("append") {
+    assert(Stream(1, 2).append(Stream(3, 4)).append(Stream()).toList == List(1, 2, 3, 4))
+  }
+
+  test("flatMap") {
+    val result: Stream[Int] = Stream(1, 2, 3).flatMap(i => Stream(i, i))
+    assert(result.toList == List(1, 1, 2, 2, 3, 3))
   }
 }
