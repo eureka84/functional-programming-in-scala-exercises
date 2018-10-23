@@ -107,4 +107,15 @@ class StreamTest extends FunSuite {
     assert(Stream().zipAll(Stream()).toList == Nil)
   }
 
+  test("zipWith"){
+    val sum: (Int, Int) => Int  = _ + _
+
+    assert(Stream(1, 2, 3).zipWith(empty[Int])(sum).toList == Nil)
+    assert(empty[Int].zipWith(Stream(1, 2, 3))(sum).toList == Nil)
+    assert(Stream(1, 2, 3).zipWith(Stream(1, 2))(sum).toList == List(2, 4))
+    assert(Stream(1, 3).zipWith(Stream(1, 2, 3))(sum).toList == List(2, 5))
+    assert(Stream(1, 2, 3).zipWith(Stream(4, 5, 6))(sum).toList == List(5, 7, 9))
+
+  }
+
 }
