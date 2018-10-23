@@ -101,6 +101,12 @@ sealed trait Stream[+A] {
         case (Cons(h1, t1), Cons(h2, t2)) => Some(f(h1(), h2()), (t1(), t2()))
       }
 
+  def startsWith[A](s2: Stream[A]): Boolean = (this, s2) match {
+    case (_, Empty) => true
+    case (Cons(h1, t1), Cons(h2, t2))  if h1() == h2() =>  t1().startsWith(t2())
+    case _ => false
+  }
+
 }
 
 case object Empty extends Stream[Nothing]

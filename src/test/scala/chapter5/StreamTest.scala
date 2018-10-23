@@ -118,4 +118,13 @@ class StreamTest extends FunSuite {
 
   }
 
+
+  test("startsWith") {
+    assert(Stream(1, 2, 3).startsWith(Stream(1, 2)))
+    assert(Stream(1, 2, 3).startsWith(Stream()))
+    assert(Stream().startsWith(Stream()))
+    assert(!Stream().startsWith(Stream(1, 2, 3)))
+    assert(!Stream(12, 3, 4).startsWith(Stream(1, 2, 3)))
+    assert(!Stream(1, 2, 3, 4).startsWith(Stream(1, 2, 4)))
+  }
 }
