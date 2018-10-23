@@ -4,6 +4,11 @@ import chapter5.Stream._
 
 sealed trait Stream[+A] {
 
+  override def toString: String = this match {
+    case Empty => "empty"
+    case Cons(h, t) => s"{${h().toString}, ${t().toString}}"
+  }
+
   def toListRecursive: List[A] = this match {
     case Empty => Nil
     case Cons(h, t) => h() :: t().toListRecursive
@@ -93,19 +98,28 @@ sealed trait Stream[+A] {
     }
 
   def zipWith[B, C](s2: Stream[B])(f: (A, B) => C): Stream[C] =
-    unfold((this, s2))
-      {
-        case (Empty, Empty) => None
-        case (Cons(_, _), Empty) => None
-        case (Empty, Cons(_, _)) => None
-        case (Cons(h1, t1), Cons(h2, t2)) => Some(f(h1(), h2()), (t1(), t2()))
-      }
+    unfold((this, s2)) {
+      case (Empty, Empty) => None
+      case (Cons(_, _), Empty) => None
+      case (Empty, Cons(_, _)) => None
+      case (Cons(h1, t1), Cons(h2, t2)) => Some(f(h1(), h2()), (t1(), t2()))
+    }
 
-  def startsWith[A](s2: Stream[A]): Boolean = (this, s2) match {
-    case (_, Empty) => true
-    case (Cons(h1, t1), Cons(h2, t2))  if h1() == h2() =>  t1().startsWith(t2())
-    case _ => false
-  }
+  def startsWith[A](s2: Stream[A]): Boolean =
+    zipAll(s2) takeWhile {
+      case (_, Some(_)) => true
+      case _ => false
+    } forAll { case (optA, optB) => (
+      for {
+        a <- optA
+        b <- optB
+      } yield a == b) getOrElse false }
+
+  //  def startsWith[A](s2: Stream[A]): Boolean = (this, s2) match {
+  //    case (_, Empty) => true
+  //    case (Cons(h1, t1), Cons(h2, t2))  if h1() == h2() =>  t1().startsWith(t2())
+  //    case _ => false
+  //  }
 
 }
 
