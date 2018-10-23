@@ -51,8 +51,9 @@ sealed trait Stream[+A] {
       case Cons(h, t) if p(h()) => Some((h(), t()))
       case _ => None
     }
-//  def takeWhile(p: A => Boolean): Stream[A] =
-//    foldRight(empty[A])((elem, acc) => if (p(elem)) cons(elem, acc) else empty)
+
+  //  def takeWhile(p: A => Boolean): Stream[A] =
+  //    foldRight(empty[A])((elem, acc) => if (p(elem)) cons(elem, acc) else empty)
 
   //  def takeWhile(f: A => Boolean): Stream[A] = this match {
   //    case Cons(h, t) if f(h()) => cons(h(), t() takeWhile f)
@@ -83,7 +84,13 @@ sealed trait Stream[+A] {
   def flatMap[B](f: A => Stream[B]): Stream[B] =
     foldRight(empty[B])((h, t) => f(h).append(t))
 
-  def zipAll[B](s2: Stream[B]): Stream[(Option[A], Option[B])] = ???
+  def zipAll[B](s2: Stream[B]): Stream[(Option[A], Option[B])] =
+    unfold((this, s2)) {
+      case (Empty, Empty) => None
+      case (Cons(h, t), Empty) => Some((Some(h()), None), (t(), Empty))
+      case (Empty, Cons(h, t)) => Some((None, Some(h())), (Empty, t()))
+      case (Cons(h1, t1), Cons(h2, t2)) => Some((Some(h1()), Some(h2())), (t1(), t2()))
+    }
 
 }
 

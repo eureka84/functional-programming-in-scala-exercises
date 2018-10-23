@@ -79,8 +79,23 @@ class StreamTest extends FunSuite {
   }
 
   test("zipAll") {
-    assert(Stream(1, 2, 3).zipAll(Stream()).toList == Nil)
-    assert(Stream().zipAll(Stream(1, 2, 3)).toList == Nil)
+    assert(
+      Stream(1, 2, 3).zipAll(Stream()).toList ==
+      List(
+        (Some(1), None),
+        (Some(2), None),
+        (Some(3), None)
+      )
+    )
+
+    assert(
+      Stream().zipAll(Stream(1, 2, 3)).toList ==
+        List(
+          (None, Some(1)),
+          (None, Some(2)),
+          (None, Some(3))
+        )
+    )
     assert(
       Stream(1, 2, 3).zipAll(Stream(1, 2, 3)).toList ==
       List(
@@ -89,7 +104,7 @@ class StreamTest extends FunSuite {
         (Some(3), Some(3))
       )
     )
-
+    assert(Stream().zipAll(Stream()).toList == Nil)
   }
 
 }
