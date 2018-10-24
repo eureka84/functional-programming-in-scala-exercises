@@ -81,11 +81,11 @@ class StreamTest extends FunSuite {
   test("zipAll") {
     assert(
       Stream(1, 2, 3).zipAll(Stream()).toList ==
-      List(
-        (Some(1), None),
-        (Some(2), None),
-        (Some(3), None)
-      )
+        List(
+          (Some(1), None),
+          (Some(2), None),
+          (Some(3), None)
+        )
     )
 
     assert(
@@ -98,17 +98,17 @@ class StreamTest extends FunSuite {
     )
     assert(
       Stream(1, 2, 3).zipAll(Stream(1, 2, 3)).toList ==
-      List(
-        (Some(1), Some(1)),
-        (Some(2), Some(2)),
-        (Some(3), Some(3))
-      )
+        List(
+          (Some(1), Some(1)),
+          (Some(2), Some(2)),
+          (Some(3), Some(3))
+        )
     )
     assert(Stream().zipAll(Stream()).toList == Nil)
   }
 
-  test("zipWith"){
-    val sum: (Int, Int) => Int  = _ + _
+  test("zipWith") {
+    val sum: (Int, Int) => Int = _ + _
 
     assert(Stream(1, 2, 3).zipWith(empty[Int])(sum).toList == Nil)
     assert(empty[Int].zipWith(Stream(1, 2, 3))(sum).toList == Nil)
@@ -118,7 +118,6 @@ class StreamTest extends FunSuite {
 
   }
 
-
   test("startsWith") {
     assert(Stream(1, 2, 3).startsWith(Stream(1, 2)))
     assert(Stream(1, 2, 3).startsWith(Stream()))
@@ -127,4 +126,12 @@ class StreamTest extends FunSuite {
     assert(!Stream(12, 3, 4).startsWith(Stream(1, 2, 3)))
     assert(!Stream(1, 2, 3, 4).startsWith(Stream(1, 2, 4)))
   }
+
+  test("tails") {
+    assert(
+      Stream(1, 2, 3).tails.toString ==
+      Stream(Stream(1, 2, 3), Stream(2, 3), Stream(3)).toString)
+  }
+
+
 }

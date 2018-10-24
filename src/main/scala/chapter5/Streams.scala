@@ -106,20 +106,25 @@ sealed trait Stream[+A] {
     }
 
   def startsWith[A](s2: Stream[A]): Boolean =
-    zipAll(s2) takeWhile {
-      case (_, Some(_)) => true
-      case _ => false
-    } forAll { case (optA, optB) => (
-      for {
-        a <- optA
-        b <- optB
-      } yield a == b) getOrElse false }
+    zipAll(s2) takeWhile (_._2.isDefined) forAll { case (optA, optB) => (
+        for {
+          a <- optA
+          b <- optB
+        } yield a == b
+      ) getOrElse false
+    }
 
   //  def startsWith[A](s2: Stream[A]): Boolean = (this, s2) match {
   //    case (_, Empty) => true
   //    case (Cons(h1, t1), Cons(h2, t2))  if h1() == h2() =>  t1().startsWith(t2())
   //    case _ => false
   //  }
+
+  def tails: Stream[Stream[A]]=
+    unfold(this) {
+      case Empty => None
+      case Cons(h, t) => Some(Cons(h, t), t())
+    }
 
 }
 
