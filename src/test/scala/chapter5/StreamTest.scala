@@ -128,10 +128,19 @@ class StreamTest extends FunSuite {
   }
 
   test("tails") {
-    assert(
-      Stream(1, 2, 3).tails.toString ==
-      Stream(Stream(1, 2, 3), Stream(2, 3), Stream(3)).toString)
+    val expected = Array(List(1, 2, 3), List(2, 3), List(3), List())
+    Stream(1, 2, 3).tails.zipWith(from(0) take 4)((_, _)) map {
+      case (stream, index) => assert(stream.toList == expected(index))
+    }
   }
 
+  test("exists") {
+    assert(Stream(1, 2, 3).exists(_ % 3 == 0))
+  }
+
+  test("hasSubsequence") {
+    assert(Stream(1, 2, 3).hasSubsequence(Stream(1, 2)))
+    assert(!Stream(1, 2, 3).hasSubsequence(Stream(2, 1)))
+  }
 
 }

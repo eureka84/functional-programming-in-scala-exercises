@@ -107,10 +107,10 @@ sealed trait Stream[+A] {
 
   def startsWith[A](s2: Stream[A]): Boolean =
     zipAll(s2) takeWhile (_._2.isDefined) forAll { case (optA, optB) => (
-        for {
-          a <- optA
-          b <- optB
-        } yield a == b
+      for {
+        a <- optA
+        b <- optB
+      } yield a == b
       ) getOrElse false
     }
 
@@ -120,11 +120,22 @@ sealed trait Stream[+A] {
   //    case _ => false
   //  }
 
-  def tails: Stream[Stream[A]]=
+  def tails: Stream[Stream[A]] =
     unfold(this) {
       case Empty => None
       case Cons(h, t) => Some(Cons(h, t), t())
-    }
+    } append Stream()
+
+  def exists(p: A => Boolean): Boolean =
+    foldRight(false)((e, acc) => acc || p(e))
+
+//  def exists(p: A => Boolean): Boolean = this match {
+//    case Empty => false
+//    case Cons(h, t) => if (p(h())) true else t().exists(p)
+//  }
+
+  def hasSubsequence[A](s: Stream[A]): Boolean =
+    tails exists (_ startsWith s)
 
 }
 
