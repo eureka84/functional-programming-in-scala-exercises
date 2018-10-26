@@ -143,4 +143,10 @@ class StreamTest extends FunSuite {
     assert(!Stream(1, 2, 3).hasSubsequence(Stream(2, 1)))
   }
 
+  test("scanRight") {
+    assert(
+      Stream(1, 2, 3).scanRight(0)(_ + _).toList == List(6, 5, 3, 0)
+    )
+  }
+
 }

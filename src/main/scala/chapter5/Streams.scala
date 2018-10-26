@@ -46,6 +46,15 @@ sealed trait Stream[+A] {
     case _ => z
   }
 
+  def scanRight[B](z: => B)(f: (A, => B) => B): Stream[B] =
+    foldRight(Stream(z))((elem, acc) => acc.headOption.map(b => cons(f(elem, b), acc)).getOrElse(Empty))
+//    tails map (s => s.foldRight(z)(f)) append Stream(z)
+
+//  def scanRight[B](z: => B)(f: (A, => B) => B): Stream[B] = this match {
+//    case Empty => Stream(z)
+//    case nonEmpty => cons(nonEmpty.foldRight(z)(f), nonEmpty.drop(1).scanRight(z)(f))
+//  }
+
   def forAll(p: A => Boolean): Boolean = this match {
     case Cons(h, t) => p(h()) && t().forAll(p)
     case _ => true
