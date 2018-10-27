@@ -17,7 +17,7 @@ class RNGTest extends FunSuite with GeneratorDrivenPropertyChecks {
 
   test("double") {
     forAll { seed: Long =>
-      val (randomDouble, _)= double(SimpleRNG(seed))
+      val (randomDouble, _) = double(SimpleRNG(seed))
       assert(randomDouble >= 0)
       assert(randomDouble < 1)
     }
@@ -25,7 +25,7 @@ class RNGTest extends FunSuite with GeneratorDrivenPropertyChecks {
     assert(double(FixedRng(Int.MaxValue))._1 < 1)
   }
 
-  test("intDouble"){
+  test("intDouble") {
     forAll { seed: Long =>
       val ((randomInt, randomDouble), _) = intDouble(SimpleRNG(seed))
       assert(randomInt >= 0)
@@ -35,7 +35,7 @@ class RNGTest extends FunSuite with GeneratorDrivenPropertyChecks {
     }
   }
 
-  test("doubleInt"){
+  test("doubleInt") {
     forAll { seed: Long =>
       val ((randomDouble, randomInt), _) = doubleInt(SimpleRNG(seed))
       assert(randomInt >= 0)
@@ -45,14 +45,22 @@ class RNGTest extends FunSuite with GeneratorDrivenPropertyChecks {
     }
   }
 
-  test("double3"){
+  test("double3") {
     forAll { seed: Long =>
       val ((d1, d2, d3), _) = double3(SimpleRNG(seed))
 
       val doubles = List(d1, d2, d3)
 
-      assert(doubles.forall(_ >=0))
+      assert(doubles.forall(_ >= 0))
       assert(doubles.forall(_ < 1))
+    }
+  }
+
+  test("ints") {
+    forAll { seed: Long =>
+      val lists = (1 to 10) map (count => (count, ints(count)(SimpleRNG(seed))._1))
+
+      assert(lists.forall { case (size, list) => list.length == size })
     }
   }
 

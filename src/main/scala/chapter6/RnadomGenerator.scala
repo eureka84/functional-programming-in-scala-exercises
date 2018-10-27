@@ -45,4 +45,15 @@ object RNG {
     ((d1, d2, d3), rng3)
   }
 
+  def ints(count: Int)(rng: RNG): (List[Int], RNG) = {
+    def loop(n: Int, acc: List[Int], rng: RNG): (List[Int], RNG) = {
+      if (n ==0) (acc, rng)
+      else {
+        val (nextInt, nextRng) = rng.nextInt
+        loop(n -1, nextInt::acc, nextRng)
+      }
+    }
+    loop(count, Nil, rng)
+  }
+
 }
