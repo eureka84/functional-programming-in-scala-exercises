@@ -58,9 +58,11 @@ class RNGTest extends FunSuite with GeneratorDrivenPropertyChecks {
 
   test("ints") {
     forAll { seed: Long =>
-      val lists = (1 to 10) map (count => (count, ints(count)(SimpleRNG(seed))._1))
+      val list = ints(10)(SimpleRNG(seed))._1
 
-      assert(lists.forall { case (size, list) => list.length == size })
+      assert(list.length == 10 )
+      val pairsOfSuccessive = list.take(9).zip(list.drop(1))
+      assert(pairsOfSuccessive.forall {case (prev, next) => prev != next})
     }
   }
 
