@@ -22,17 +22,36 @@ object RNG {
 
   type Rand[+A] = RNG => (A, RNG)
 
-  def nonNegativeInt: Rand[Int] = (rng: RNG) => {
-    val (nextInt, nextRNG) = rng.nextInt
-    val nextVal = if (nextInt < 0) -(nextInt + 1) else nextInt
-    (nextVal, nextRNG)
-  }
+  def unit[A](a: A): Rand[A] =
+    rng => (a, rng)
 
-  def double: Rand[Double] = (rng: RNG) => {
-    val (nextInt, nextRNG) = nonNegativeInt(rng)
-    val nextVal  = if (nextInt == Int.MaxValue) 0.0 else nextInt.toDouble / Int.MaxValue
-    (nextVal , nextRNG)
-  }
+  def map[A,B](s: Rand[A])(f: A => B): Rand[B] =
+    rng => {
+      val (a, rng2) = s(rng)
+      (f(a), rng2)
+    }
+
+  val int: Rand[Int] = _.nextInt
+
+  def nonNegativeInt: Rand[Int] =
+    map(int)(i => if (i < 0) -(i + 1) else i)
+//  def nonNegativeInt: Rand[Int] = (rng: RNG) => {
+//    val (nextInt, nextRNG) = rng.nextInt
+//    val nextVal = if (nextInt < 0) -(nextInt + 1) else nextInt
+//    (nextVal, nextRNG)
+//  }
+
+  def nonNegativeEven: Rand[Int] =
+    map(nonNegativeInt)(i => i - i % 2)
+
+  def double: Rand[Double] =
+    map(nonNegativeInt)(i => if (i == Int.MaxValue) 0.0 else i.toDouble / Int.MaxValue)
+
+//  def double: Rand[Double] = (rng: RNG) => {
+//    val (nextInt, nextRNG) = nonNegativeInt(rng)
+//    val nextVal  = if (nextInt == Int.MaxValue) 0.0 else nextInt.toDouble / Int.MaxValue
+//    (nextVal , nextRNG)
+//  }
 
   def intDouble: Rand[(Int,Double)] = (rng: RNG) =>  {
     val (nextInt, nextRng) = nonNegativeInt(rng)
