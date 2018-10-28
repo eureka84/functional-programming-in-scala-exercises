@@ -31,6 +31,23 @@ object RNG {
       (f(a), rng2)
     }
 
+  def map2[A,B,C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] =
+    rng => {
+      val (a, rng1) = ra(rng)
+      val (b, rng2) = rb(rng1)
+      (f(a,b), rng2)
+    }
+
+  def both[A,B](ra: Rand[A], rb: Rand[B]): Rand[(A,B)] =
+    map2(ra, rb)((_, _))
+
+  def sequence[A](fs: List[Rand[A]]): Rand[List[A]] = rng =>
+    fs.foldRight((Nil: List[A], rng))((currRand, accRand) => {
+      val (tail, prevRng) = accRand
+      val (head, newRng) = currRand(prevRng)
+      (head::tail, newRng)
+    })
+
   val int: Rand[Int] = _.nextInt
 
   def nonNegativeInt: Rand[Int] =
@@ -53,17 +70,23 @@ object RNG {
 //    (nextVal , nextRNG)
 //  }
 
-  def intDouble: Rand[(Int,Double)] = (rng: RNG) =>  {
-    val (nextInt, nextRng) = nonNegativeInt(rng)
-    val (nextDouble, finalRng) = double(nextRng)
-    ((nextInt, nextDouble), finalRng)
-  }
+    def intDouble: Rand[(Int,Double)] =
+      both(nonNegativeInt, double)
 
-  def doubleInt: Rand[(Double,Int)] = (rng: RNG) => {
-    val (nextDouble, nextRng) = double(rng)
-    val (nextInt, finalRng) = nonNegativeInt(nextRng)
-    ((nextDouble, nextInt), finalRng)
-  }
+//  def intDouble: Rand[(Int,Double)] = (rng: RNG) =>  {
+//    val (nextInt, nextRng) = nonNegativeInt(rng)
+//    val (nextDouble, finalRng) = double(nextRng)
+//    ((nextInt, nextDouble), finalRng)
+//  }
+
+  def doubleInt: Rand[(Double,Int)] =
+    both(double, nonNegativeInt)
+
+//  def doubleInt: Rand[(Double,Int)] = (rng: RNG) => {
+//    val (nextDouble, nextRng) = double(rng)
+//    val (nextInt, finalRng) = nonNegativeInt(nextRng)
+//    ((nextDouble, nextInt), finalRng)
+//  }
 
   def double3: Rand[(Double,Double,Double)] = (rng: RNG) => {
     val (d1, rng1) = double(rng)
@@ -72,16 +95,18 @@ object RNG {
     ((d1, d2, d3), rng3)
   }
 
-  def ints(count: Int): Rand[List[Int]] = (rng: RNG) => {
-    @tailrec
-    def loop(n: Int, acc: List[Int], rng: RNG): (List[Int], RNG) = {
-      if (n ==0) (acc, rng)
-      else {
-        val (nextInt, nextRng) = rng.nextInt
-        loop(n -1, nextInt::acc, nextRng)
-      }
-    }
-    loop(count, Nil, rng)
-  }
+  def ints(count: Int): Rand[List[Int]] =
+    sequence(List.fill(count)(nonNegativeInt))
+//  def ints(count: Int): Rand[List[Int]] = (rng: RNG) => {
+//    @tailrec
+//    def loop(n: Int, acc: List[Int], rng: RNG): (List[Int], RNG) = {
+//      if (n ==0) (acc, rng)
+//      else {
+//        val (nextInt, nextRng) = rng.nextInt
+//        loop(n -1, nextInt::acc, nextRng)
+//      }
+//    }
+//    loop(count, Nil, rng)
+//  }
 
 }
