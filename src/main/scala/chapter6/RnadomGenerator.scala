@@ -41,12 +41,15 @@ object RNG {
   def both[A,B](ra: Rand[A], rb: Rand[B]): Rand[(A,B)] =
     map2(ra, rb)((_, _))
 
-  def sequence[A](fs: List[Rand[A]]): Rand[List[A]] = rng =>
-    fs.foldRight((Nil: List[A], rng))((currRand, accRand) => {
-      val (tail, prevRng) = accRand
-      val (head, newRng) = currRand(prevRng)
-      (head::tail, newRng)
-    })
+  def sequence[A](fs: List[Rand[A]]): Rand[List[A]] =
+    fs.foldRight(unit(List[A]()))((currRand, accRand) => map2(currRand, accRand)(_ :: _))
+
+//  def sequence[A](fs: List[Rand[A]]): Rand[List[A]] = rng =>
+//    fs.foldRight((Nil: List[A], rng))((currRand, accRand) => {
+//      val (tail, prevRng) = accRand
+//      val (head, newRng) = currRand(prevRng)
+//      (head::tail, newRng)
+//    })
 
   val int: Rand[Int] = _.nextInt
 
