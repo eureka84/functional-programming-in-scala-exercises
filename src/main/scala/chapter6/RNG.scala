@@ -17,14 +17,25 @@ case class SimpleRNG(seed: Long) extends RNG {
 object RNG {
 
   type State[S,+A] = S => (A,S)
+  def unitS[S, A](a: A): State[S, A] = s => (a, s)
+  def mapS[S, A, B](s: State[S, A])(f: A => B): State[S, B] =
+    flatMapS(s)(f.andThen((b: B) => unitS[S, B](b)))
+  def map2S[S, A, B, C](sa: State[S, A], sb: State[S, B])(f: (A, B) => C): State[S, C] =
+    flatMapS(sa)(a => mapS(sb)(b => f(a, b)))
+  def flatMapS[S, A, B](f: State[S, A])(g: A => State[S, B]): State[S, B] =
+    s => {
+      val (a, nextState) = f(s)
+      g(a)(nextState)
+    }
+  def sequenceS[S, A](fs: List[State[S, A]]): State[S, List[A]] =
+    fs.foldRight(unitS[S, List[A]](List[A]()))((sa, acc) => map2S[S, A, List[A], List[A]](sa, acc)(_ :: _))
+
 
   type Rand[A] = State[RNG, A]
 
-  def unit[A](a: A): Rand[A] =
-    rng => (a, rng)
+  def unit[A](a: A): Rand[A] = unitS[RNG, A](a)
 
-  def map[A, B](s: Rand[A])(f: A => B): Rand[B] =
-    flatMap(s)(f.andThen((b: B) => unit(b)))
+  def map[A, B](s: Rand[A])(f: A => B): Rand[B] = mapS[RNG, A, B](s)(f)
 
   //  def map[A,B](s: Rand[A])(f: A => B): Rand[B] =
   //    rng => {
@@ -32,8 +43,7 @@ object RNG {
   //      (f(a), rng2)
   //    }
 
-  def map2[A, B, C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] =
-    flatMap(ra)(a => map(rb)(b => f(a, b)))
+  def map2[A, B, C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] = map2S[RNG, A, B, C](ra, rb)(f)
 
   //  def map2[A,B,C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] =
   //    rng => {
@@ -45,8 +55,7 @@ object RNG {
   def both[A, B](ra: Rand[A], rb: Rand[B]): Rand[(A, B)] =
     map2(ra, rb)((_, _))
 
-  def sequence[A](fs: List[Rand[A]]): Rand[List[A]] =
-    fs.foldRight(unit(List[A]()))((currRand, accRand) => map2(currRand, accRand)(_ :: _))
+  def sequence[A](fs: List[Rand[A]]): Rand[List[A]] = sequenceS[RNG, A](fs)
 
   //  def sequence[A](fs: List[Rand[A]]): Rand[List[A]] = rng =>
   //    fs.foldRight((Nil: List[A], rng))((currRand, accRand) => {
@@ -55,10 +64,7 @@ object RNG {
   //      (head::tail, newRng)
   //    })
 
-  def flatMap[A, B](f: Rand[A])(g: A => Rand[B]): Rand[B] = rng => {
-    val (a, newRng) = f(rng)
-    g(a)(newRng)
-  }
+  def flatMap[A, B](f: Rand[A])(g: A => Rand[B]): Rand[B] = flatMapS[RNG, A, B](f)(g)
 
   val int: Rand[Int] = _.nextInt
 
