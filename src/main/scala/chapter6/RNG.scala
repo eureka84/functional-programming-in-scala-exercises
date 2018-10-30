@@ -32,10 +32,9 @@ object State {
     flatMap(sa)(a => map(sb)(b => f(a, b)))
 
   def sequence[S, A](fs: List[State[S, A]]): State[S, List[A]] =
-    fs.foldRight(unit[S, List[A]](List[A]()))((sa, acc) => map2[S, A, List[A], List[A]](sa, acc)(_ :: _))
+    fs.foldRight(unit[S, List[A]](List[A]()))((sa, acc) => map2(sa, acc)(_ :: _))
 
 }
-
 
 
 object RNG {
