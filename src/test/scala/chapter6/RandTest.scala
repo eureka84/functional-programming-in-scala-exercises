@@ -1,10 +1,10 @@
 package chapter6
 
-import chapter6.RNG._
+import chapter6.Rand._
 import org.scalatest.FunSuite
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 
-class RNGTest extends FunSuite with GeneratorDrivenPropertyChecks {
+class RandTest extends FunSuite with GeneratorDrivenPropertyChecks {
 
   test("non negative number") {
     forAll { seed: Long =>
@@ -66,8 +66,4 @@ class RNGTest extends FunSuite with GeneratorDrivenPropertyChecks {
     }
   }
 
-}
-
-case class FixedRng(value: Int) extends RNG {
-  override def nextInt: (Int, RNG) = (value, this)
 }
