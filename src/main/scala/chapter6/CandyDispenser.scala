@@ -1,7 +1,5 @@
 package chapter6
 
-import chapter6.State.State
-
 sealed trait Input
 
 case object Coin extends Input
@@ -12,11 +10,11 @@ case class Machine(locked: Boolean, candies: Int, coins: Int)
 
 object Machine {
 
-  def simulateMachine(inputs: List[Input]): State[Machine, (Int, Int)] =
-    m => {
+  def simulateMachine(inputs: List[Input]): State2[Machine, (Int, Int)] =
+    State2((m: Machine) => {
       val machine = inputs.foldLeft(m)(handleInput)
       ((machine.coins, machine.candies), machine)
-    }
+    })
 
   private def handleInput(m: Machine, i: Input): Machine = i match {
     case _ if m.candies == 0 => m

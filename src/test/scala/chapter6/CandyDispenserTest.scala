@@ -15,7 +15,7 @@ class CandyDispenserTest extends FunSuite {
 
     val m = Machine(LOCKED, initialCandies, initialCoins)
 
-    val ((coins, candies), newMachine) = simulateMachine(List(Coin))(m)
+    val ((coins, candies), newMachine) = simulateMachine(List(Coin)).run(m)
 
     assert(coins == initialCoins + 1)
     assert(candies == initialCandies)
@@ -30,7 +30,7 @@ class CandyDispenserTest extends FunSuite {
 
     val m = Machine(UNLOCKED, initialCandies, initialCoins)
 
-    val ((coins, candies), newMachine) = simulateMachine(List(Turn))(m)
+    val ((coins, candies), newMachine) = simulateMachine(List(Turn)).run(m)
 
     assert(coins == initialCoins)
     assert(candies == initialCandies - 1)
@@ -45,11 +45,11 @@ class CandyDispenserTest extends FunSuite {
     val initialCoins = 1
 
     val lockedMachine = Machine(LOCKED, initialCandies, initialCoins)
-    val (_, afterTurn) = simulateMachine(List(Turn))(lockedMachine)
+    val (_, afterTurn) = simulateMachine(List(Turn)).run(lockedMachine)
     assert(afterTurn == lockedMachine)
 
     val unlockedMachine = Machine(UNLOCKED, initialCandies, initialCoins)
-    val (_, afterInserting) = simulateMachine(List(Coin))(unlockedMachine)
+    val (_, afterInserting) = simulateMachine(List(Coin)).run(unlockedMachine)
     assert(afterInserting == unlockedMachine)
   }
 
@@ -59,7 +59,7 @@ class CandyDispenserTest extends FunSuite {
 
     val m = Machine(UNLOCKED, initialCandies, initialCoins)
 
-    val (_, nm) = simulateMachine(List(Turn, Coin, Coin, Turn, Turn))(m)
+    val (_, nm) = simulateMachine(List(Turn, Coin, Coin, Turn, Turn)).run(m)
 
     assert(nm == m)
   }

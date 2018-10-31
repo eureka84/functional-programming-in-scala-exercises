@@ -2,17 +2,16 @@ package chapter6
 
 object Rand2 {
 
-  import State2.State
-  import State2.State._
+  import State2._
 
-  type Rand[A] = State[RNG, A]
+  type Rand[A] = State2[RNG, A]
 
   def both[A, B](ra: Rand[A], rb: Rand[B]): Rand[(A, B)] =
     ra.map2(rb)((_, _))
 
   def sequenceRand[A](fs: List[Rand[A]]): Rand[List[A]] = sequence[RNG, A](fs)
 
-  val int: Rand[Int] = State2.State(rng => rng.nextInt)
+  val int: Rand[Int] = State2(rng => rng.nextInt)
 
   def nonNegativeInt: Rand[Int] =
     int.map(i => if (i < 0) -(i + 1) else i)
