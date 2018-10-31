@@ -4,7 +4,7 @@ package chapter6
   * @author asciarra 
   */
 object Rand {
-  import State._
+  import StateFunction._
 
   type Rand[A] = State[RNG, A]
 

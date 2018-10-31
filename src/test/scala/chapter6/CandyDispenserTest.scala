@@ -8,8 +8,7 @@ class CandyDispenserTest extends FunSuite {
   val LOCKED: Boolean = true
   val UNLOCKED: Boolean = false
 
-  test("Inserting a coin into a locked machine " +
-    "will cause it to unlock if there’s any candy left") {
+  test("Inserting a coin into a locked machine will cause it to unlock if there’s any candy left") {
     val initialCandies = 1
     val initialCoins = 0
 
@@ -22,8 +21,7 @@ class CandyDispenserTest extends FunSuite {
     assert(newMachine == Machine(UNLOCKED, candies, coins))
   }
 
-  test("Turning the knob on an unlocked machine " +
-    "will cause it to dispense candy and become locked.") {
+  test("Turning the knob on an unlocked machine will cause it to dispense candy and become locked.") {
 
     val initialCandies = 1
     val initialCoins = 1
@@ -38,8 +36,7 @@ class CandyDispenserTest extends FunSuite {
 
   }
 
-  test("Turning the knob on a locked machine or " +
-    "inserting a coin into an unlocked machine does nothing") {
+  test("Turning the knob on a locked machine or inserting a coin into an unlocked machine does nothing") {
 
     val initialCandies = 1
     val initialCoins = 1

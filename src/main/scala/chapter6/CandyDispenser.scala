@@ -10,8 +10,8 @@ case class Machine(locked: Boolean, candies: Int, coins: Int)
 
 object Machine {
 
-  def simulateMachine(inputs: List[Input]): State2[Machine, (Int, Int)] =
-    State2((m: Machine) => {
+  def simulateMachine(inputs: List[Input]): State[Machine, (Int, Int)] =
+    State((m: Machine) => {
       val machine = inputs.foldLeft(m)(handleInput)
       ((machine.coins, machine.candies), machine)
     })
