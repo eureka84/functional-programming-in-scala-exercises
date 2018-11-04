@@ -10,17 +10,25 @@ object Par {
 
   private case class UnitFuture[A](get: A) extends Future[A] {
     def isDone = true
+
     def get(timeout: Long, units: TimeUnit): A = get
+
     def isCancelled = false
+
     def cancel(evenIfRunning: Boolean): Boolean = false
   }
 
-//  def map2[A,B,C](a: Par[A], b: Par[B])(f: (A,B) => C): Par[C] =
-//    (es: ExecutorService) => {
-//      val af = a(es)
-//      val bf = b(es)
-//      UnitFuture(f(af.get, bf.get))
-//    }
+  //  def map2[A,B,C](a: Par[A], b: Par[B])(f: (A,B) => C): Par[C] =
+  //    (es: ExecutorService) => {
+  //      val af = a(es)
+  //      val bf = b(es)
+  //      UnitFuture(f(af.get, bf.get))
+  //    }
+
+  def map[A, B](parA: Par[A])(f: A => B): Par[B] = es => {
+    val value: Future[A] = parA(es)
+    UnitFuture(f(value.get))
+  }
 
   /* This version respects timeouts. See `Map2Future` below. */
   def map2[A, B, C](a: Par[A], b: Par[B])(f: (A, B) => C): Par[C] =
@@ -73,18 +81,21 @@ object Par {
 
   def run[A](s: ExecutorService)(a: Par[A]): Future[A] = a(s)
 
+
 }
 
 object Examples {
 
-  import Par.Par
+  import Par._
 
   def sum(ints: IndexedSeq[Int]): Par[Int] =
     if (ints.length <= 1)
       Par.unit(ints.headOption getOrElse 0)
     else {
-      val (l,r) = ints.splitAt(ints.length/2)
+      val (l, r) = ints.splitAt(ints.length / 2)
       Par.map2(Par.fork(sum(l)), Par.fork(sum(r)))(_ + _)
     }
+
+  def asyncF[A, B](f: A => B): A => Par[B] = (a: A) => map(lazyUnit(a))(f)
 
 }
