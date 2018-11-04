@@ -81,7 +81,6 @@ object Par {
 
   def run[A](s: ExecutorService)(a: Par[A]): Future[A] = a(s)
 
-
 }
 
 object Examples {
