@@ -110,4 +110,10 @@ object Examples {
 //    case x::xs => map2(lazyUnit(f(x)), fork(parMap(xs)(f)))(_ :: _)
 //  }
 
+  def parFilter[A](as: List[A])(p: A => Boolean): Par[List[A]] =
+    as.foldRight(unit(List[A]()))(
+      (h, accPar) => map2(asyncF(p)(h), accPar)((pH, acc) => if(pH) h::acc else acc)
+    )
+
+
 }
