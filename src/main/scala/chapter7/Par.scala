@@ -84,6 +84,9 @@ object Par {
 
   def run[A](s: ExecutorService)(a: Par[A]): Future[A] = a(s)
 
+  def sequence[A](ps: List[Par[A]]): Par[List[A]] =
+//    es => UnitFuture(ps.map(par => par(es).get))
+    ps.foldRight[Par[List[A]]](unit(List()))((parA, parOfListOfA) => map2(parA, parOfListOfA)(_ :: _))
 }
 
 object Examples {
@@ -100,9 +103,11 @@ object Examples {
 
   def asyncF[A, B](f: A => B): A => Par[B] = (a: A) => map(lazyUnit(a))(f)
 
-  def parMap[A,B](ps: List[A])(f: A => B): Par[List[B]] = ps match {
-    case Nil => lazyUnit(Nil)
-    case x::xs => map2(lazyUnit(f(x)), fork(parMap(xs)(f)))(_ :: _)
-  }
+  def parMap[A,B](ps: List[A])(f: A => B): Par[List[B]] =
+    fork(sequence(ps.map(asyncF(f))))
+//  def parMap[A,B](ps: List[A])(f: A => B): Par[List[B]] = ps match {
+//    case Nil => lazyUnit(Nil)
+//    case x::xs => map2(lazyUnit(f(x)), fork(parMap(xs)(f)))(_ :: _)
+//  }
 
 }

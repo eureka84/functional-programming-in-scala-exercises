@@ -22,7 +22,7 @@ class ParTest extends FunSuite with Matchers {
   }
 
   test("parMap") {
-    val es = Executors.newFixedThreadPool(5)
+    val es = Executors.newFixedThreadPool(3)
     val par: Par[List[Int]] = parMap(List(1, 2, 3))(a => a * a)
 
     par(es).get(5, TimeUnit.SECONDS) shouldEqual List(1, 4, 9)
