@@ -26,12 +26,12 @@ object Par {
   //    }
 
 
-  def map[A, B](parA: Par[A])(f: A => B): Par[B] = map2(parA, unit(()))((a,_) => f(a))
+  def map[A, B](parA: Par[A])(f: A => B): Par[B] = map2(parA, unit(()))((a, _) => f(a))
 
-//  def map[A, B](parA: Par[A])(f: A => B): Par[B] = es => {
-//    val value: Future[A] = parA(es)
-//    UnitFuture(f(value.get))
-//  }
+  //  def map[A, B](parA: Par[A])(f: A => B): Par[B] = es => {
+  //    val value: Future[A] = parA(es)
+  //    UnitFuture(f(value.get))
+  //  }
 
   /* This version respects timeouts. See `Map2Future` below. */
   def map2[A, B, C](a: Par[A], b: Par[B])(f: (A, B) => C): Par[C] =
@@ -85,7 +85,7 @@ object Par {
   def run[A](s: ExecutorService)(a: Par[A]): Future[A] = a(s)
 
   def sequence[A](ps: List[Par[A]]): Par[List[A]] =
-//    es => UnitFuture(ps.map(par => par(es).get))
+  //    es => UnitFuture(ps.map(par => par(es).get))
     ps.foldRight[Par[List[A]]](unit(List()))((parA, parOfListOfA) => map2(parA, parOfListOfA)(_ :: _))
 }
 
@@ -103,17 +103,24 @@ object Examples {
 
   def asyncF[A, B](f: A => B): A => Par[B] = (a: A) => map(lazyUnit(a))(f)
 
-  def parMap[A,B](ps: List[A])(f: A => B): Par[List[B]] =
+  def parMap[A, B](ps: List[A])(f: A => B): Par[List[B]] =
     fork(sequence(ps.map(asyncF(f))))
-//  def parMap[A,B](ps: List[A])(f: A => B): Par[List[B]] = ps match {
-//    case Nil => lazyUnit(Nil)
-//    case x::xs => map2(lazyUnit(f(x)), fork(parMap(xs)(f)))(_ :: _)
-//  }
 
-  def parFilter[A](as: List[A])(p: A => Boolean): Par[List[A]] =
-    as.foldRight(lazyUnit(List[A]()))(
-      (a, parOfListOfA) => map2(asyncF(p)(a), parOfListOfA)((pH, acc) => if(pH) a::acc else acc)
-    )
+  //  def parMap[A,B](ps: List[A])(f: A => B): Par[List[B]] = ps match {
+  //    case Nil => lazyUnit(Nil)
+  //    case x::xs => map2(lazyUnit(f(x)), fork(parMap(xs)(f)))(_ :: _)
+  //  }
+
+  def parFilter[A](l: List[A])(f: A => Boolean): Par[List[A]] = {
+    val pars: List[Par[List[A]]] = l map asyncF((a: A) => if (f(a)) List(a) else List())
+    val parOfList: Par[List[List[A]]] = sequence(pars)
+    map(parOfList)(_.flatten) // convenience method on `List` for concatenating a list of lists
+  }
+
+//  def parFilter[A](as: List[A])(p: A => Boolean): Par[List[A]] =
+//    as.foldRight(lazyUnit(List[A]()))(
+//      (a, parOfListOfA) => map2(asyncF(p)(a), parOfListOfA)((pH, acc) => if (pH) a :: acc else acc)
+//    )
 
 
 }
