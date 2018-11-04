@@ -25,10 +25,13 @@ object Par {
   //      UnitFuture(f(af.get, bf.get))
   //    }
 
-  def map[A, B](parA: Par[A])(f: A => B): Par[B] = es => {
-    val value: Future[A] = parA(es)
-    UnitFuture(f(value.get))
-  }
+
+  def map[A, B](parA: Par[A])(f: A => B): Par[B] = map2(parA, unit(()))((a,_) => f(a))
+
+//  def map[A, B](parA: Par[A])(f: A => B): Par[B] = es => {
+//    val value: Future[A] = parA(es)
+//    UnitFuture(f(value.get))
+//  }
 
   /* This version respects timeouts. See `Map2Future` below. */
   def map2[A, B, C](a: Par[A], b: Par[B])(f: (A, B) => C): Par[C] =
