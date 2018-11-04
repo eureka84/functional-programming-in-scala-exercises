@@ -100,4 +100,9 @@ object Examples {
 
   def asyncF[A, B](f: A => B): A => Par[B] = (a: A) => map(lazyUnit(a))(f)
 
+  def parMap[A,B](ps: List[A])(f: A => B): Par[List[B]] = ps match {
+    case Nil => lazyUnit(Nil)
+    case x::xs => map2(lazyUnit(f(x)), fork(parMap(xs)(f)))(_ :: _)
+  }
+
 }
