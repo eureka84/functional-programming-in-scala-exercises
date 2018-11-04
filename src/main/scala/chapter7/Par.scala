@@ -111,8 +111,8 @@ object Examples {
 //  }
 
   def parFilter[A](as: List[A])(p: A => Boolean): Par[List[A]] =
-    as.foldRight(unit(List[A]()))(
-      (h, accPar) => map2(asyncF(p)(h), accPar)((pH, acc) => if(pH) h::acc else acc)
+    as.foldRight(lazyUnit(List[A]()))(
+      (a, parOfListOfA) => map2(asyncF(p)(a), parOfListOfA)((pH, acc) => if(pH) a::acc else acc)
     )
 
 
