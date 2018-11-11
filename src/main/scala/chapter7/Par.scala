@@ -21,12 +21,12 @@ object Par {
 
   def map[A, B](parA: Par[A])(f: A => B): Par[B] = map2(parA, unit(()))((a, _) => f(a))
 
-  def map2[A,B,C](p: Par[A], p2: Par[B])(f: (A,B) => C): Par[C] =
+  def map2[A, B, C](p: Par[A], p2: Par[B])(f: (A, B) => C): Par[C] =
     es => new Future[C] {
       def apply(cb: C => Unit): Unit = {
         var ar: Option[A] = None
         var br: Option[B] = None
-        val combiner = Actor[Either[A,B]] {
+        val combiner = Actor[Either[A, B]] {
           case Left(a) => br match {
             case None => ar = Option(a)
             case Some(b) => eval(es)(cb(f(a, b)))
@@ -48,7 +48,9 @@ object Par {
     }
 
   def eval(es: ExecutorService)(r: => Unit): Unit =
-    es.submit(new Callable[Unit] { def call = r })
+    es.submit(new Callable[Unit] {
+      def call = r
+    })
 
   def lazyUnit[A](a: => A): Par[A] = fork(unit(a))
 
@@ -65,7 +67,7 @@ object Par {
 
 
   def choice[A](cond: Par[Boolean])(t: Par[A], f: Par[A]): Par[A] =
-    choiceN(map(cond)(bool => if(bool) 0 else 1))(List(t, f))
+    choiceN(map(cond)(bool => if (bool) 0 else 1))(List(t, f))
 
   def choiceN[A](n: Par[Int])(choices: List[Par[A]]): Par[A] =
     es => {
