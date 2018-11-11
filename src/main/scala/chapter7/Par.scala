@@ -67,15 +67,15 @@ object Par {
 
 
   def choice[A](cond: Par[Boolean])(t: Par[A], f: Par[A]): Par[A] =
-    chooser(cond)(bool => if(bool) t else f)
+    flatMap(cond)(bool => if(bool) t else f)
 
   def choiceN[A](n: Par[Int])(choices: List[Par[A]]): Par[A] =
-    chooser(n)(choices(_))
+    flatMap(n)(choices(_))
 
   def choiceMap[K, V](key: Par[K])(choices: Map[K, Par[V]]): Par[V] =
-    chooser(key)(choices(_))
+    flatMap(key)(choices(_))
 
-  def chooser[A,B](pa: Par[A])(choices: A => Par[B]): Par[B] =
+  def flatMap[A,B](pa: Par[A])(choices: A => Par[B]): Par[B] =
     es => {
       val choice = run(es)(pa)
       choices(choice)(es)
