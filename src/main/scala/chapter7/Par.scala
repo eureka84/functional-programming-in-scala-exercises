@@ -1,91 +1,66 @@
 package chapter7
 
-import java.util.concurrent.{Callable, ExecutorService, Future, TimeUnit}
+import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.{Callable, CountDownLatch, ExecutorService}
+
+import scalaz.concurrent.Actor
 
 object Par {
 
-  type Par[A] = ExecutorService => Future[A]
-
-  def unit[A](a: A): Par[A] = (_: ExecutorService) => UnitFuture(a)
-
-  private case class UnitFuture[A](get: A) extends Future[A] {
-    def isDone = true
-
-    def get(timeout: Long, units: TimeUnit): A = get
-
-    def isCancelled = false
-
-    def cancel(evenIfRunning: Boolean): Boolean = false
+  sealed trait Future[A] {
+    private[chapter7] def apply(k: A => Unit): Unit
   }
 
-  //  def map2[A,B,C](a: Par[A], b: Par[B])(f: (A,B) => C): Par[C] =
-  //    (es: ExecutorService) => {
-  //      val af = a(es)
-  //      val bf = b(es)
-  //      UnitFuture(f(af.get, bf.get))
-  //    }
+  type Par[A] = ExecutorService => Future[A]
 
+  def unit[A](a: A): Par[A] =
+    es => new Future[A] {
+      def apply(cb: A => Unit): Unit =
+        cb(a)
+    }
 
   def map[A, B](parA: Par[A])(f: A => B): Par[B] = map2(parA, unit(()))((a, _) => f(a))
 
-  //  def map[A, B](parA: Par[A])(f: A => B): Par[B] = es => {
-  //    val value: Future[A] = parA(es)
-  //    UnitFuture(f(value.get))
-  //  }
-
-  /* This version respects timeouts. See `Map2Future` below. */
-  def map2[A, B, C](a: Par[A], b: Par[B])(f: (A, B) => C): Par[C] =
-    es => {
-      val (af, bf) = (a(es), b(es))
-      Map2Future(af, bf, f)
+  def map2[A,B,C](p: Par[A], p2: Par[B])(f: (A,B) => C): Par[C] =
+    es => new Future[C] {
+      def apply(cb: C => Unit): Unit = {
+        var ar: Option[A] = None
+        var br: Option[B] = None
+        val combiner = Actor[Either[A,B]] {
+          case Left(a) => br match {
+            case None => ar = Option(a)
+            case Some(b) => eval(es)(cb(f(a, b)))
+          }
+          case Right(b) => ar match {
+            case None => br = Some(b)
+            case Some(a) => eval(es)(cb(f(a, b)))
+          }
+        }
+        p(es)(a => combiner ! Left(a))
+        p2(es)(b => combiner ! Right(b))
+      }
     }
-
-  /*
-    Note: this implementation will not prevent repeated evaluation if multiple threads call `get` in parallel.
-    We could prevent this using synchronization, but it isn't needed for our purposes here (also, repeated evaluation
-    of pure values won't affect results).
-  */
-  case class Map2Future[A, B, C](a: Future[A], b: Future[B], f: (A, B) => C) extends Future[C] {
-
-    @volatile var cache: Option[C] = None
-
-    def isDone: Boolean = cache.isDefined
-
-    def isCancelled: Boolean = a.isCancelled || b.isCancelled
-
-    def cancel(evenIfRunning: Boolean): Boolean =
-      a.cancel(evenIfRunning) || b.cancel(evenIfRunning)
-
-    def get: C = compute(Long.MaxValue)
-
-    def get(timeout: Long, units: TimeUnit): C =
-      compute(TimeUnit.NANOSECONDS.convert(timeout, units))
-
-    private def compute(timeoutInNanos: Long): C = cache match {
-      case Some(c) => c
-      case None =>
-        val start = System.nanoTime
-        val ar = a.get(timeoutInNanos, TimeUnit.NANOSECONDS)
-        val stop = System.nanoTime;
-        val aTime = stop - start
-        val br = b.get(timeoutInNanos - aTime, TimeUnit.NANOSECONDS)
-        val ret = f(ar, br)
-        cache = Some(ret)
-        ret
-    }
-  }
 
   def fork[A](a: => Par[A]): Par[A] =
-    es => es.submit(new Callable[A] {
-      def call: A = a(es).get
-    })
+    es => new Future[A] {
+      def apply(cb: A => Unit): Unit =
+        eval(es)(a(es)(cb))
+    }
+
+  def eval(es: ExecutorService)(r: => Unit): Unit =
+    es.submit(new Callable[Unit] { def call = r })
 
   def lazyUnit[A](a: => A): Par[A] = fork(unit(a))
 
-  def run[A](s: ExecutorService)(a: Par[A]): Future[A] = a(s)
+  def run[A](es: ExecutorService)(p: Par[A]): A = {
+    val ref = new AtomicReference[A]
+    val latch = new CountDownLatch(1)
+    p(es) { a => ref.set(a); latch.countDown }
+    latch.await
+    ref.get
+  }
 
   def sequence[A](ps: List[Par[A]]): Par[List[A]] =
-  //    es => UnitFuture(ps.map(par => par(es).get))
     ps.foldRight[Par[List[A]]](unit(List()))((parA, parOfListOfA) => map2(parA, parOfListOfA)(_ :: _))
 }
 
@@ -106,21 +81,10 @@ object Examples {
   def parMap[A, B](ps: List[A])(f: A => B): Par[List[B]] =
     fork(sequence(ps.map(asyncF(f))))
 
-  //  def parMap[A,B](ps: List[A])(f: A => B): Par[List[B]] = ps match {
-  //    case Nil => lazyUnit(Nil)
-  //    case x::xs => map2(lazyUnit(f(x)), fork(parMap(xs)(f)))(_ :: _)
-  //  }
-
   def parFilter[A](l: List[A])(f: A => Boolean): Par[List[A]] = {
     val pars: List[Par[List[A]]] = l map asyncF((a: A) => if (f(a)) List(a) else List())
     val parOfList: Par[List[List[A]]] = sequence(pars)
     map(parOfList)(_.flatten) // convenience method on `List` for concatenating a list of lists
   }
-
-//  def parFilter[A](as: List[A])(p: A => Boolean): Par[List[A]] =
-//    as.foldRight(lazyUnit(List[A]()))(
-//      (a, parOfListOfA) => map2(asyncF(p)(a), parOfListOfA)((pH, acc) => if (pH) a :: acc else acc)
-//    )
-
 
 }
