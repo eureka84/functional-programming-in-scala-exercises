@@ -65,9 +65,13 @@ object Par {
 
 
   def choice[A](cond: Par[Boolean])(t: Par[A], f: Par[A]): Par[A] =
-    es =>
-      if (run(es)(cond)) t(es)
-      else f(es)
+    choiceN(map(cond)(bool => if(bool) 0 else 1))(List(t, f))
+
+  def choiceN[A](n: Par[Int])(choices: List[Par[A]]): Par[A] =
+    es => {
+      val i = run(es)(n)
+      choices(i)(es)
+    }
 
 }
 
