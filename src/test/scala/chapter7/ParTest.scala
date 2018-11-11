@@ -36,4 +36,14 @@ class ParTest extends FunSuite with Matchers {
     Par.run(es)(par) shouldEqual List(2, 4)
   }
 
+
+  ignore("throwing an exception in a parallel computation makes it never terminate") {
+    val delayedValue: Int => Par[Int] =  asyncF(n => {
+      throw new ArithmeticException("Puppa")
+      n
+    })
+
+    Par.run(Executors.newCachedThreadPool())(delayedValue(1)) shouldEqual 1
+  }
+
 }
