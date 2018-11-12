@@ -75,11 +75,17 @@ object Par {
   def choiceMap[K, V](key: Par[K])(choices: Map[K, Par[V]]): Par[V] =
     flatMap(key)(choices(_))
 
+//  def flatMap[A,B](pa: Par[A])(f: A => Par[B]): Par[B] =
+//    join(map(pa)(f))
   def flatMap[A,B](pa: Par[A])(choices: A => Par[B]): Par[B] =
     es => {
       val choice = run(es)(pa)
       choices(choice)(es)
     }
+
+  def join[A](a: Par[Par[A]]): Par[A] =
+//    es => run(es)(a)(es)
+    flatMap(a)(identity)
 
 }
 
