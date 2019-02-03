@@ -2,9 +2,6 @@ package chapter2
 
 import scala.annotation.tailrec
 
-/**
-  * @author asciarra 
-  */
 object Recursion {
 
   def fib(n: Int): Int = {

@@ -3,9 +3,6 @@ package chapter2
 import chapter2.HOF._
 import org.scalatest.FunSuite
 
-/**
-  * @author asciarra 
-  */
 class HOFTests extends FunSuite {
 
   val naturalOrder: (Int, Int) => Boolean = (a: Int, b: Int) => a < b
